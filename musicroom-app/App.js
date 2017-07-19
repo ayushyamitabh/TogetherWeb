@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { Button, StyleSheet, Text, View, ScrollView, StatusBar, TouchableHighlight } from 'react-native';
+import { Animated, Button, StyleSheet, Text, View, ScrollView, StatusBar, TouchableHighlight } from 'react-native';
+import Header from './components/Header.js';
 import Dimensions from 'Dimensions';
 
 class App extends Component {
@@ -7,7 +8,24 @@ class App extends Component {
     super(props);
     this.state={
       title: 'MUSICROOM',
-      music: false
+      // MUSIC PANE
+      mw: new Animated.Value(Dimensions.get('window').width/100 * 80), // music width
+      mh: new Animated.Value(Dimensions.get('window').height/100 * 80), // music height
+      mt: new Animated.Value(Dimensions.get('window').height/100 * 5), // music marginTop
+      ml: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginLeft
+      mr: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginRight
+      // VIDEO PANE
+      vw: new Animated.Value(Dimensions.get('window').width/100 * 80), // music width
+      vh: new Animated.Value(Dimensions.get('window').height/100 * 80), // music height
+      vt: new Animated.Value(Dimensions.get('window').height/100 * 5), // music marginTop
+      vl: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginLeft
+      vr: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginRight
+      // CHAT PANE
+      cw: new Animated.Value(Dimensions.get('window').width/100 * 80), // music width
+      ch: new Animated.Value(Dimensions.get('window').height/100 * 80), // music height
+      ct: new Animated.Value(Dimensions.get('window').height/100 * 5), // music marginTop
+      cl: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginLeft
+      cr: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginRight
     }
     this.openPane = this.openPane.bind(this);
     this.closePane = this.closePane.bind(this);
@@ -17,48 +35,157 @@ class App extends Component {
       title: paneName.toString().toUpperCase(),
       [paneName]: true
     })
+    var p = paneName.charAt(0);
+    Animated.timing(
+      this.state[`${p}w`],
+      {
+        toValue: Dimensions.get('window').width,
+        duration: 500
+      }
+    ).start();
+    Animated.timing(
+      this.state[`${p}h`],
+      {
+        toValue: Dimensions.get('window').height,
+        duration: 500
+      }
+    ).start();
+    Animated.timing(
+      this.state[`${p}t`],
+      {
+        toValue: 0,
+        duration: 500
+      }
+    ).start();
+    Animated.timing(
+      this.state[`${p}l`],
+      {
+        toValue: 0,
+        duration: 500
+      }
+    ).start();
+    Animated.timing(
+      this.state[`${p}r`],
+      {
+        toValue: 0,
+        duration: 500
+      }
+    ).start();
   }
   closePane() {
+    var p
     if (this.state.music === true) {
+      p = 'm';
       this.setState({music: false})
     } else if (this.state.video === true) {
+      p = 'v';
       this.setState({video: false})
     } else if (this.state.chat === true) {
+      p = 'c';
       this.setState({chat: false})
     }
+      Animated.timing(
+        this.state[`${p}w`],
+        {
+          toValue: Dimensions.get('window').width/100 * 80,
+          duration: 500
+        }
+      ).start();
+      Animated.timing(
+        this.state[`${p}h`],
+        {
+          toValue: Dimensions.get('window').height/100 * 80,
+          duration: 500
+        }
+      ).start();
+      Animated.timing(
+        this.state[`${p}t`],
+        {
+          toValue: Dimensions.get('window').height/100 * 5,
+          duration: 500
+        }
+      ).start();
+      Animated.timing(
+        this.state[`${p}l`],
+        {
+          toValue: Dimensions.get('window').width/100 * 10,
+          duration: 500
+        }
+      ).start();
+      Animated.timing(
+        this.state[`${p}r`],
+        {
+          toValue: Dimensions.get('window').width/100 * 10,
+          duration: 500
+        }
+      ).start();
     this.setState({title:"MUSICROOM"})
   }
   render() {
     return (
       <View>
         <StatusBar animated={true} hidden={true} />
-        <View style={styles.view}>
-          {
-            this.state.music || this.state.video || this.state.chat ?
-            <Button style={styles.closebutton} onPress={this.closePane} title="GO BACK" /> : true
-          }
-          <Text style={styles.header}>{this.state.title}</Text>
-        </View>
+        <Header
+          title={this.state.title}
+          backHandler={this.closePane}
+          canGoBack={this.state.music || this.state.video || this.state.chat ? true : false} />
         <ScrollView
           scrollEnabled={this.state.music || this.state.video || this.state.chat ? false : true}
           contentContainerStyle={styles.panes}
           horizontal={true}
           pagingEnabled={true}>
-          <TouchableHighlight onPress={()=>{this.openPane('music')}}>
-            <View style={!this.state.music ? styles.paneMusic : styles.paneMusicOpen}>
+
+          <TouchableHighlight
+            activeOpacity={1}
+            underlayColor="rgba(0,0,0,0.1)"
+            onPress={()=>{this.openPane('music')}}>
+            <Animated.View style={{
+              backgroundColor: 'rgba(100,100,150,1)',
+              marginTop: this.state.mt,
+              marginLeft: this.state.ml,
+              marginRight: this.state.mr,
+              width: this.state.mw,
+              height: this.state.mh,
+              justifyContent: 'center'
+            }}>
               <Text style={styles.musicText}>MUSIC</Text>
-            </View>
+            </Animated.View>
           </TouchableHighlight>
-          <TouchableHighlight onPress={()=>{this.openPane('video')}}>
-            <View style={!this.state.video ? styles.paneVideo : styles.paneVideoOpen}>
-              <Text style={styles.videoText}>VIDEO</Text>
-            </View>
+
+          <TouchableHighlight
+            activeOpacity={1}
+            underlayColor="rgba(0,0,0,0.1)"
+            onPress={()=>{this.openPane('video')}}>
+            <Animated.View style={{
+              backgroundColor: 'rgba(100,150,100,1)',
+              marginTop: this.state.vt,
+              marginLeft: this.state.vl,
+              marginRight: this.state.vr,
+              width: this.state.vw,
+              height: this.state.vh,
+              justifyContent: 'center'
+            }}>
+              <Text style={styles.musicText}>VIDEO</Text>
+            </Animated.View>
           </TouchableHighlight>
-          <TouchableHighlight onPress={()=>{this.openPane('chat')}}>
-            <View style={!this.state.chat ? styles.paneChat : styles.paneChatOpen}>
-              <Text style={styles.chatText}>CHAT</Text>
-            </View>
+
+          <TouchableHighlight
+            activeOpacity={1}
+            underlayColor="rgba(0,0,0,0.1)"
+            onPress={()=>{this.openPane('chat')}}>
+            <Animated.View style={{
+              backgroundColor: 'rgba(150,100,100,1)',
+              marginTop: this.state.ct,
+              marginLeft: this.state.cl,
+              marginRight: this.state.cr,
+              width: this.state.cw,
+              height: this.state.ch,
+              justifyContent: 'center'
+            }}>
+              <Text style={styles.musicText}>CHAT</Text>
+            </Animated.View>
           </TouchableHighlight>
+
         </ScrollView>
       </View>
     );
