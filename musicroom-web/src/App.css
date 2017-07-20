@@ -1,0 +1,32 @@
+body {
+  background: url('./res/background.jpg');
+  background-repeat: repeat-y;
+  background-size: cover;
+  background-position: top;
+}
+.navigation {
+  user-select: none !important;
+  background-color: rgba(100,100,200,0) !important;
+  box-shadow: none !important;
+}
+.navigation h2 {
+  position: relative !important;
+  /*width: 100% !important;*/
+  /*text-align: center !important;*/
+  font-size: 55px !important;
+  -webkit-transform: rotate(-12deg);
+  margin-top: 300px !important;
+}
+.navigation .fixed{
+  position: fixed;
+  top: 0;
+
+}
+.navigation .fixed h2 {
+  position: relative !important;
+  /*width: 100% !important;*/
+  /*text-align: center !important;*/
+  font-size: 55px !important;
+  -webkit-transform: rotate(-12deg);
+  margin-top: 300px !important;
+}
