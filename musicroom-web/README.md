@@ -18,13 +18,13 @@ Created by [Ayushya](https://www.github.com/ayushyamitabh) & [Ishan](https://www
 
 ## Table Of Contents
 <br>
-- [Root JS]('./src/App.js')
-- [Music Room View]('./src/Music.js')
-- [Music Room Styling]('./src/Music.css')
-- [Video Room View]('./src/Video.js')
-- [Video Room Styling]('./src/Video.css')
-- [Chat Room View]('./src/Chat.js')
-- [Chat Room Styling]('./src/Chat.css')
+- [Root JS]('./src/App.js') <br>
+- [Music Room View]('./src/Music.js') <br>
+- [Music Room Styling]('./src/Music.css') <br>
+- [Video Room View]('./src/Video.js') <br>
+- [Video Room Styling]('./src/Video.css') <br>
+- [Chat Room View]('./src/Chat.js') <br>
+- [Chat Room Styling]('./src/Chat.css') <br>
 
 ## Publishing
 To create an optimized build - `npm run build`
