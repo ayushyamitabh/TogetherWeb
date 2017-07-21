@@ -11,10 +11,10 @@ Created by [Ayushya](https://www.github.com/ayushyamitabh) & [Ishan](https://www
 
 ## Getting Started
 <br>
-1. Clone this repo - `git clone https://github.com/ayushyamitabh/musicroom` <br>
-2. Go to the web directory - `cd musicroom-web` <br>
-3. Install dependencies - `npm install` <br>
-4. To start the local server [on localhost:3000] - `npm start` <br>
+1. Clone this repo `git clone https://github.com/ayushyamitabh/musicroom` <br>
+2. Go to the web directory `cd musicroom-web` <br> 
+3. Install dependencies `npm install` <br>
+4. To start the local server [on localhost:3000] `npm start` <br>
 
 ## Table Of Contents
 <br>
