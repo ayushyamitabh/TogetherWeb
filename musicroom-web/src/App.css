@@ -1,6 +1,6 @@
 body {
-  background: url('./res/background.jpg');
-  background-repeat: repeat-y;
+  background: url('./res/background.png');
+  background-repeat: no-repeat;
   background-size: cover;
   background-position: top;
 }
@@ -11,22 +11,39 @@ body {
 }
 .navigation h2 {
   position: relative !important;
-  /*width: 100% !important;*/
-  /*text-align: center !important;*/
+  width: 100% !important;
   font-size: 55px !important;
-  -webkit-transform: rotate(-12deg);
-  margin-top: 300px !important;
+  margin-top: 35px !important;
 }
-.navigation .fixed{
-  position: fixed;
-  top: 0;
-
+.navigation h2:hover {
+  cursor: default;
 }
-.navigation .fixed h2 {
-  position: relative !important;
-  /*width: 100% !important;*/
-  /*text-align: center !important;*/
-  font-size: 55px !important;
-  -webkit-transform: rotate(-12deg);
-  margin-top: 300px !important;
+.tiles-container {
+  width: 73% !important;
+  margin: 0 auto !important;
+  margin-top: 10% !important;
+}
+.tiles-container .tile {
+  margin-top: 20px !important;
+  transition: all ease-out 0.3s;
+}
+.tiles-container .tile:hover {
+  margin-top: 0 !important;
+}
+.about {
+  width: 72% !important;
+  margin: 0 auto !important;
+}
+.res-links {
+  width: 73% !important;
+  margin: 0 auto !important;
+}
+.res-links .res a{
+  background-color: #3C8271 !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+.room-title {
+  color: white !important;
+  flex: 1 !important;
 }
