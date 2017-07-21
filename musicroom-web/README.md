@@ -18,7 +18,7 @@ Created by [Ayushya](https://www.github.com/ayushyamitabh) & [Ishan](https://www
 
 ## Table Of Contents
 <br>
-- [Root JS]('./src/App.js') <br>
+- [Root JS](./src/App.js) <br>
 - [Music Room View]('./src/Music.js') <br>
 - [Music Room Styling]('./src/Music.css') <br>
 - [Video Room View]('./src/Video.js') <br>
