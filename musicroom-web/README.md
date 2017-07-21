@@ -5,7 +5,7 @@ Created by [Ayushya](https://www.github.com/ayushyamitabh) & [Ishan](https://www
 ## Dependencies
 1. Material UI [[website]](https://material-ui-1dab0.firebaseapp.com/)<br>
 2. ReactJS [[website]](https://facebook.github.io/react/)<br>
-3. React Native [[website]](https://facebook.github.io/react-native/) [[usage]]('https://github.com/ayushyamitabh/musicroom/musicroom-app')<br>
+3. React Native [[website]](https://facebook.github.io/react-native/) | [[usage]]('https://github.com/ayushyamitabh/musicroom/musicroom-app')<br>
 4. Socket IO [[website]](https://socket.io)<br>
 <br>
 
