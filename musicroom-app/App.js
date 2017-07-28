@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Animated, Button, StyleSheet, Text, View, ScrollView, StatusBar, TouchableHighlight } from 'react-native';
 import Header from './components/Header.js';
+import PaneContent from './components/PaneContent.js';
 import Dimensions from 'Dimensions';
 
 class App extends Component {
@@ -8,6 +9,7 @@ class App extends Component {
     super(props);
     this.state={
       title: 'MUSICROOM',
+      textmt: new Animated.Value(Dimensions.get('window').height/100 * 35),
       // MUSIC PANE
       mw: new Animated.Value(Dimensions.get('window').width/100 * 80), // music width
       mh: new Animated.Value(Dimensions.get('window').height/100 * 80), // music height
@@ -15,17 +17,17 @@ class App extends Component {
       ml: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginLeft
       mr: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginRight
       // VIDEO PANE
-      vw: new Animated.Value(Dimensions.get('window').width/100 * 80), // music width
-      vh: new Animated.Value(Dimensions.get('window').height/100 * 80), // music height
-      vt: new Animated.Value(Dimensions.get('window').height/100 * 5), // music marginTop
-      vl: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginLeft
-      vr: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginRight
+      vw: new Animated.Value(Dimensions.get('window').width/100 * 80), // video width
+      vh: new Animated.Value(Dimensions.get('window').height/100 * 80), // video height
+      vt: new Animated.Value(Dimensions.get('window').height/100 * 5), // video marginTop
+      vl: new Animated.Value(Dimensions.get('window').width/100 * 10), // video marginLeft
+      vr: new Animated.Value(Dimensions.get('window').width/100 * 10), // video marginRight
       // CHAT PANE
-      cw: new Animated.Value(Dimensions.get('window').width/100 * 80), // music width
-      ch: new Animated.Value(Dimensions.get('window').height/100 * 80), // music height
-      ct: new Animated.Value(Dimensions.get('window').height/100 * 5), // music marginTop
-      cl: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginLeft
-      cr: new Animated.Value(Dimensions.get('window').width/100 * 10), // music marginRight
+      cw: new Animated.Value(Dimensions.get('window').width/100 * 80), // chat width
+      ch: new Animated.Value(Dimensions.get('window').height/100 * 80), // chat height
+      ct: new Animated.Value(Dimensions.get('window').height/100 * 5), // chat marginTop
+      cl: new Animated.Value(Dimensions.get('window').width/100 * 10), // chat marginLeft
+      cr: new Animated.Value(Dimensions.get('window').width/100 * 10), // chat marginRight
     }
     this.openPane = this.openPane.bind(this);
     this.closePane = this.closePane.bind(this);
@@ -40,35 +42,42 @@ class App extends Component {
       this.state[`${p}w`],
       {
         toValue: Dimensions.get('window').width,
-        duration: 500
+        duration: 250
       }
     ).start();
     Animated.timing(
       this.state[`${p}h`],
       {
         toValue: Dimensions.get('window').height,
-        duration: 500
+        duration: 250
       }
     ).start();
     Animated.timing(
       this.state[`${p}t`],
       {
         toValue: 0,
-        duration: 500
+        duration: 250
       }
     ).start();
     Animated.timing(
       this.state[`${p}l`],
       {
         toValue: 0,
-        duration: 500
+        duration: 250
       }
     ).start();
     Animated.timing(
       this.state[`${p}r`],
       {
         toValue: 0,
-        duration: 500
+        duration: 250
+      }
+    ).start();
+    Animated.timing(
+      this.state.textmt,
+      {
+        toValue: Dimensions.get('window').height/100 * -10,
+        duration: 150
       }
     ).start();
   }
@@ -88,35 +97,42 @@ class App extends Component {
         this.state[`${p}w`],
         {
           toValue: Dimensions.get('window').width/100 * 80,
-          duration: 500
+          duration: 250
         }
       ).start();
       Animated.timing(
         this.state[`${p}h`],
         {
           toValue: Dimensions.get('window').height/100 * 80,
-          duration: 500
+          duration: 250
         }
       ).start();
       Animated.timing(
         this.state[`${p}t`],
         {
           toValue: Dimensions.get('window').height/100 * 5,
-          duration: 500
+          duration: 250
         }
       ).start();
       Animated.timing(
         this.state[`${p}l`],
         {
           toValue: Dimensions.get('window').width/100 * 10,
-          duration: 500
+          duration: 250
         }
       ).start();
       Animated.timing(
         this.state[`${p}r`],
         {
           toValue: Dimensions.get('window').width/100 * 10,
-          duration: 500
+          duration: 250
+        }
+      ).start();
+      Animated.timing(
+        this.state.textmt,
+        {
+          toValue: Dimensions.get('window').height/100 * 35,
+          duration: 150
         }
       ).start();
     this.setState({title:"MUSICROOM"})
@@ -146,9 +162,18 @@ class App extends Component {
               marginRight: this.state.mr,
               width: this.state.mw,
               height: this.state.mh,
-              justifyContent: 'center'
             }}>
-              <Text style={styles.musicText}>MUSIC</Text>
+              {
+                this.state.music === true ? 
+                <PaneContent type="music" /> :
+                <Animated.Text style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  marginTop: this.state.textmt
+                }}>
+                  MUSIC
+                </Animated.Text>
+              }
             </Animated.View>
           </TouchableHighlight>
 
@@ -162,10 +187,19 @@ class App extends Component {
               marginLeft: this.state.vl,
               marginRight: this.state.vr,
               width: this.state.vw,
-              height: this.state.vh,
-              justifyContent: 'center'
+              height: this.state.vh
             }}>
-              <Text style={styles.musicText}>VIDEO</Text>
+              {
+                this.state.video === true ? 
+                <PaneContent type="video" /> :
+                <Animated.Text style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  marginTop: this.state.textmt
+                }}>
+                  VIDEO
+                </Animated.Text>
+              }
             </Animated.View>
           </TouchableHighlight>
 
@@ -179,10 +213,19 @@ class App extends Component {
               marginLeft: this.state.cl,
               marginRight: this.state.cr,
               width: this.state.cw,
-              height: this.state.ch,
-              justifyContent: 'center'
+              height: this.state.ch
             }}>
-              <Text style={styles.musicText}>CHAT</Text>
+              {
+                this.state.chat === true ? 
+                <PaneContent type="chat" /> :
+                <Animated.Text style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  marginTop: this.state.textmt
+                }}>
+                  CHAT
+                </Animated.Text>
+              }
             </Animated.View>
           </TouchableHighlight>
 
@@ -208,63 +251,6 @@ const styles = StyleSheet.create({
   panes: {
     height: Dimensions.get('window').height,
     flexDirection: 'row'
-  },
-  paneMusic: {
-    backgroundColor: 'rgba(100,100,150,1)',
-    marginTop: Dimensions.get('window').height/100 * 5,
-    marginLeft: Dimensions.get('window').width/100 * 10,
-    marginRight: Dimensions.get('window').width/100 * 10,
-    width: Dimensions.get('window').width/100 * 80,
-    height: Dimensions.get('window').height/100 * 80,
-    justifyContent: 'center'
-  },
-  paneMusicOpen: {
-    backgroundColor: 'rgba(100,100,150,1)',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-    justifyContent: 'center'
-  },
-  paneVideo: {
-    backgroundColor: 'rgba(150,100,100,1)',
-    marginTop: Dimensions.get('window').height/100 * 5,
-    marginLeft: Dimensions.get('window').width/100 * 10,
-    marginRight: Dimensions.get('window').width/100 * 10,
-    width: Dimensions.get('window').width/100 * 80,
-    height: Dimensions.get('window').height/100 * 80,
-    justifyContent: 'center'
-  },
-  paneVideoOpen: {
-    backgroundColor: 'rgba(150,100,100,1)',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-    justifyContent: 'center'
-  },
-  paneChat: {
-    backgroundColor: 'rgba(100,150,100,1)',
-    marginTop: Dimensions.get('window').height/100 * 5,
-    marginLeft: Dimensions.get('window').width/100 * 10,
-    marginRight: Dimensions.get('window').width/100 * 10,
-    width: Dimensions.get('window').width/100 * 80,
-    height: Dimensions.get('window').height/100 * 80,
-    justifyContent: 'center'
-  },
-  paneChatOpen: {
-    backgroundColor: 'rgba(100,150,100,1)',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-    justifyContent: 'center'
-  },
-  musicText: {
-    textAlign: 'center',
-    color: 'white'
-  },
-  videoText: {
-    textAlign: 'center',
-    color: 'white'
-  },
-  chatText: {
-    textAlign: 'center',
-    color: 'white'
   },
   closebutton: {
     flex: 2,
