@@ -9,14 +9,25 @@ app.get('/', function(req, res){
   }
 });
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
+var play = false;
+var time = 0;
+io.on('connection', function(socket) {
+  console.log('user connected');
+  socket.emit('play-pause-video', play);
+  socket.emit('update-time', time);
+
+  socket.on('play-pause-video', function(curPlay) {
+    play = curPlay;
+    io.emit('play-pause-video', curPlay);
   });
-  socket.on('message', function(data){
-    io.emit('message',data);
-    console.log(data);
+
+  socket.on('update-time', function(curTime) {
+    time = curTime;
+    io.emit('update-time', curTime);
+  });
+
+  socket.on('disconnect', function() {
+    console.log('user disconnected');
   });
 });
 
