@@ -7,6 +7,9 @@ import './Chat.css';
 class Chat extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      newMessage: ''
+    }
     this.socket = io(`http://localhost:8080`);
     this.sendMessage = this.sendMessage.bind(this);
   }
@@ -18,17 +21,45 @@ class Chat extends Component {
   componentWillUnmount() {
     this.socket.disconnect();
   }
-  sendMessage() {
-    this.socket.emit('message','tes message');
+  sendMessage(e) {
+    e.preventDefault();
+    var message = {
+      from: 'Ayushya',
+      msg: this.state.newMessage
+    };
+    if (message.msg === '') {
+      return false;
+    }
+    this.socket.emit('message', message);
+    this.setState({
+      newMessage: ''
+    })
     return false;
   }
   render () {
     return (
       <div className="chat-content">
-        <TextField fullWidth={true} floatingLabelText={true} />
-        <Button fullWidth={true} color="primary" onClick={this.sendMessage}>
-          SEND MESSAGE
-        </Button>
+        <form className="message-area" onSubmit={this.sendMessage}>
+          <TextField
+            required
+            id="new-message"
+            multiLine
+            rowsMax="4"
+            className="message"
+            label="Message"
+            margin="normal"
+            value={this.state.newMessage}
+            onChange={event => {this.setState({newMessage:event.target.value})}}
+            InputProps={{ placeholder: 'Start typing...' }}
+          />
+          <Button 
+            className="send-btn"
+            color="primary" 
+            type="submit"
+          >
+            SEND MESSAGE
+          </Button>
+        </form>
       </div>
     );
   }

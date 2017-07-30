@@ -31,7 +31,7 @@ io.on('connection', function(socket) {
   // CHAT
   socket.on('message', function(data){
     io.emit('message',data);
-    console.log(data);
+    console.log(data.from, data.msg);
   });
 });
 

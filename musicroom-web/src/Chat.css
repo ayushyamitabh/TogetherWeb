@@ -1,5 +1,19 @@
 .chat-content {
   padding-top: 70px;
-  padding-left: 25px;
-  padding-right: 25px;
+}
+.chat-content .message-area {
+  width: 95% !important;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  padding-bottom: 15px !important;
+  position: absolute;
+  bottom: 0;
+  background-color: rgba(216,216,216,0.7);
+}
+.chat-content .message-area .message {
+  width: 85% !important;
+}
+.chat-content .message-area .send-btn{
+  position: relative;
+  width: 15% !important;
 }
