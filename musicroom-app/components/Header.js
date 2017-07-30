@@ -28,13 +28,12 @@ const styles = StyleSheet.create({
   headerMain: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: Dimensions.get('window').height/100 * 8,
     backgroundColor: 'rgba(200,200,200,0.2)'
   },
   disabledBackButton: {
     textAlign: 'center',
     justifyContent: 'center',
-    paddingTop: 15,
-    paddingBottom: 15,
     paddingLeft: 15,
     paddingRight: 15,
     fontSize: 20,
@@ -43,8 +42,6 @@ const styles = StyleSheet.create({
   backButton:{
     textAlign: 'center',
     justifyContent: 'center',
-    paddingTop: 15,
-    paddingBottom: 15,
     paddingLeft: 15,
     paddingRight: 15,
     fontSize: 20
