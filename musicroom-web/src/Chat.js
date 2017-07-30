@@ -3,26 +3,30 @@ import io from 'socket.io-client';
 import {Button, TextField} from 'material-ui';
 import './Chat.css';
 
-let socket = io(`http://localhost:8080`);
 
 class Chat extends Component {
   constructor(props) {
     super(props);
+    this.socket = io(`http://localhost:8080`);
+    this.sendMessage = this.sendMessage.bind(this);
   }
   componentDidMount() {
-    socket.on('message', (data) => {
+    this.socket.on('message', (data) => {
       console.log(data);
     });
   }
+  componentWillUnmount() {
+    this.socket.disconnect();
+  }
   sendMessage() {
-    socket.emit('message','test message');
+    this.socket.emit('message','tes message');
     return false;
   }
   render () {
     return (
       <div className="chat-content">
-        {this.props.co}
-        <Button color="primary" onClick={this.sendMessage}>
+        <TextField fullWidth={true} floatingLabelText={true} />
+        <Button fullWidth={true} color="primary" onClick={this.sendMessage}>
           SEND MESSAGE
         </Button>
       </div>

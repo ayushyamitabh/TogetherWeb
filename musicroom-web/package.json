@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "hls.js": "^0.7.11",
     "material-ui": "^1.0.0-alpha.22",
     "material-ui-icons": "^1.0.0-alpha.19",
+    "mediaelement": "^4.2.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "socket-io-server": "^1.0.5",

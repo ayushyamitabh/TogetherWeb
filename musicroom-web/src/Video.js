@@ -3,38 +3,42 @@ import io from 'socket.io-client';
 import MediaElement from './MediaElement.js';
 import './Video.css';
 
-let socket = io(`http://localhost:8080`);
 let timeBar;
 let playerInstance;
 let playerElement;
 
 class Video extends Component {
-
+  constructor(props) {
+    super(props);
+    this.socket = io(`http://localhost:8080`);
+  }
   componentDidMount() {
     const { MediaElementPlayer } = global;
     playerInstance = new MediaElementPlayer('player_html5');
     playerElement = document.getElementById('player');
     timeBar = document.getElementsByClassName('mejs__time-slider')[0];
 
-    playerElement.addEventListener('pause', function () {
-      socket.emit('play-pause-video', false);
+    playerElement.addEventListener('pause', ()=> {
+      this.socket.emit('play-pause-video', false);
     });
-    playerElement.addEventListener('playing', function () {
-      socket.emit('play-pause-video', true);
+    playerElement.addEventListener('playing', ()=> {
+      this.socket.emit('play-pause-video', true);
     });
-    timeBar.addEventListener('click', function () {
-      socket.emit('update-time', playerInstance.getCurrentTime());
+    timeBar.addEventListener('click', ()=> {
+      this.socket.emit('update-time', playerInstance.getCurrentTime());
     });
 
-    socket.on('play-pause-video', function (curPlay) {
+    this.socket.on('play-pause-video', (curPlay)=> {
       if (curPlay) playerInstance.play();
       else playerInstance.pause();
     });
-    socket.on('update-time', function (curTime) {
+    this.socket.on('update-time', (curTime)=> {
       playerInstance.setCurrentTime(curTime);
     });
   }
-
+  componentWillUnmount() {
+    this.socket.disconnect();
+  }
   render() {
     const
       sources = [
