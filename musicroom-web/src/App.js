@@ -5,7 +5,11 @@ import {AppBar,
         CardContent,
         CardActions,
         Dialog,
+        DialogActions,
+        DialogContent,
+        DialogTitle,
         Grid,
+        TextField,
         Toolbar,
         Typography} from 'material-ui';
 import Slide from 'material-ui/transitions/Slide';
@@ -24,12 +28,31 @@ class App extends Component {
     }
     this.handleRequestClose = this.handleRequestClose.bind(this);
     this.openRoom = this.openRoom.bind(this);
+    this.getRoomName = this.getRoomName.bind(this);
+    this.requestCancel = this.requestCancel.bind(this);
+  }
+  getRoomName (type, co) {
+    this.setState({
+      getName: true,
+      stallType: type,
+      stallCO: co
+    })
+  }
+  requestCancel () {
+    this.setState({
+      getName: false,
+      stallType: '',
+      stallCO: ''
+    })
   }
   openRoom(type,co) {
     this.setState({
+      userRoomName: document.getElementById('userRoomName').value,
+      userName: document.getElementById('userName').value,
       roomOpen: true,
       roomType: type,
-      roomCO: co
+      roomCO: co,
+      getName: false
     })
   }
   handleRequestClose() {
@@ -42,6 +65,40 @@ class App extends Component {
   render() {
     return (
       <div>
+        <Dialog 
+          ignoreBackdropClick={true}
+          open={this.state.getName}
+          onRequestClose={()=>{this.setState({getName:false})}}
+        >
+          <DialogTitle>
+            {"Enter A Room Name"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField 
+              fullWidth 
+              label="Room Name"
+              id="userRoomName"
+            />
+            <TextField 
+              fullWidth 
+              label="Your Name"
+              id="userName"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={()=>{this.openRoom(this.state.stallType, this.state.stallCO)}} color="primary">
+              {
+                this.state.stallCO === 'open' ? 'Join Room' :
+                this.state.stallCO === 'create' ? 'Create Room' :
+                'Join / Create'
+              }
+            </Button>
+            <Button onClick={this.requestCancel} color="accent">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Dialog
           fullScreen
           open={this.state.roomOpen}
@@ -58,7 +115,7 @@ class App extends Component {
           {
             this.state.roomType === 'video' ? <Video co={this.state.roomCO} /> :
             this.state.roomType === 'music' ? <Music co={this.state.roomCO} /> :
-            this.state.roomType === 'chat' ? <Chat co={this.state.roomCO} /> :
+            this.state.roomType === 'chat' ? <Chat name={this.state.userName} room={this.state.userRoomName} co={this.state.roomCO} /> :
             <div>{this.state.roomCO}</div>
           }
         </Dialog>
@@ -83,15 +140,16 @@ class App extends Component {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button color="primary" onClick={()=>{this.openRoom('music','create')}}>
+                <Button color="primary" onClick={()=>{this.getRoomName('music','create')}}>
                   Create A Room
                 </Button>
-                <Button color="accent" onClick={()=>{this.openRoom('music','open')}}>
+                <Button color="accent" onClick={()=>{this.getRoomName('music','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
             </Card>
           </Grid>
+
           <Grid item xs={4}>
             <Card className="tile">
               <CardContent>
@@ -103,15 +161,16 @@ class App extends Component {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button color="primary" onClick={()=>{this.openRoom('video','create')}}>
+                <Button color="primary" onClick={()=>{this.getRoomName('video','create')}}>
                   Create A Room
                 </Button>
-                <Button color="accent" onClick={()=>{this.openRoom('video','open')}}>
+                <Button color="accent" onClick={()=>{this.getRoomName('video','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
             </Card>
           </Grid>
+
           <Grid item xs={4}>
             <Card className="tile">
               <CardContent>
@@ -123,16 +182,17 @@ class App extends Component {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button color="primary" onClick={()=>{this.openRoom('chat','create')}}>
+                <Button color="primary" onClick={()=>{this.getRoomName('chat','create')}}>
                   Create A Room
                 </Button>
-                <Button color="accent" onClick={()=>{this.openRoom('chat','open')}}>
+                <Button color="accent" onClick={()=>{this.getRoomName('chat','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
             </Card>
           </Grid>
         </Grid>
+
         <Card className="about">
           <CardContent>
             <Typography type="headline" component="h1">

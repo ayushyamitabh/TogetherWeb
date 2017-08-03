@@ -14,7 +14,8 @@ class Chat extends Component {
     this.sendMessage = this.sendMessage.bind(this);
   }
   componentDidMount() {
-    this.socket.on('message', (data) => {
+    this.socket.emit('join', {name: this.props.name, room: this.props.room});
+    this.socket.on('updateChat', (data) => {
       console.log(data);
     });
   }
@@ -23,13 +24,14 @@ class Chat extends Component {
   }
   sendMessage(e) {
     e.preventDefault();
-    var message = {
-      from: 'Ayushya',
-      msg: this.state.newMessage
-    };
-    if (message.msg === '') {
+    if (this.state.newMessage === ''){
       return false;
     }
+    var message = {
+      from: this.props.name,
+      msg: this.state.newMessage,
+      room: this.props.room
+    };
     this.socket.emit('message', message);
     this.setState({
       newMessage: ''
@@ -43,8 +45,6 @@ class Chat extends Component {
           <TextField
             required
             id="new-message"
-            multiLine
-            rowsMax="4"
             className="message"
             label="Message"
             margin="normal"

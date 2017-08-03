@@ -16,4 +16,5 @@
 .chat-content .message-area .send-btn{
   position: relative;
   width: 15% !important;
+  text-align: center !important;
 }
