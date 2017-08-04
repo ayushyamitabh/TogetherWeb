@@ -77,6 +77,7 @@ class App extends Component {
             <TextField 
               fullWidth 
               label="Room Name"
+              className="roomNameInput"
               id="userRoomName"
             />
             <TextField 
@@ -140,10 +141,10 @@ class App extends Component {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button color="primary" onClick={()=>{this.getRoomName('music','create')}}>
-                  Create A Room
-                </Button>
-                <Button color="accent" onClick={()=>{this.getRoomName('music','open')}}>
+                <Button 
+                className="joinBtn"
+                color="accent" 
+                onClick={()=>{this.getRoomName('chat','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
@@ -161,10 +162,10 @@ class App extends Component {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button color="primary" onClick={()=>{this.getRoomName('video','create')}}>
-                  Create A Room
-                </Button>
-                <Button color="accent" onClick={()=>{this.getRoomName('video','open')}}>
+                <Button 
+                className="joinBtn"
+                color="accent" 
+                onClick={()=>{this.getRoomName('chat','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
@@ -182,10 +183,10 @@ class App extends Component {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button color="primary" onClick={()=>{this.getRoomName('chat','create')}}>
-                  Create A Room
-                </Button>
-                <Button color="accent" onClick={()=>{this.getRoomName('chat','open')}}>
+                <Button 
+                className="joinBtn"
+                color="accent" 
+                onClick={()=>{this.getRoomName('chat','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
