@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import MediaElement from './MediaElement.js';
+//import {List} from 'material-ui';
+import Chat from './Chat.js';
 import './Video.css';
 
 let timeBar;
@@ -18,20 +20,27 @@ class Video extends Component {
     playerElement = document.getElementById('player');
     timeBar = document.getElementsByClassName('mejs__time-slider')[0];
 
+    this.socket.emit('join', {name: this.props.name, room: this.props.room});
+
+    //sends signal to pause video
     playerElement.addEventListener('pause', ()=> {
       this.socket.emit('play-pause-video', false);
     });
+    //sends signal to play video
     playerElement.addEventListener('playing', ()=> {
       this.socket.emit('play-pause-video', true);
     });
+    //sends signal if video time is changed
     timeBar.addEventListener('click', ()=> {
       this.socket.emit('update-time', playerInstance.getCurrentTime());
     });
 
+    //receives signal to handle play/pause
     this.socket.on('play-pause-video', (curPlay)=> {
       if (curPlay) playerInstance.play();
       else playerInstance.pause();
     });
+    //receives signal to handle video time update
     this.socket.on('update-time', (curTime)=> {
       playerInstance.setCurrentTime(curTime);
     });
