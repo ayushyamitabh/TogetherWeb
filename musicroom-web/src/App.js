@@ -114,8 +114,8 @@ class App extends Component {
             </Toolbar>
           </AppBar>
           {
-            this.state.roomType === 'video' ? <Video co={this.state.roomCO} /> :
-            this.state.roomType === 'music' ? <Music co={this.state.roomCO} /> :
+            this.state.roomType === 'video' ? <Video name={this.state.userName} room={this.state.userRoomName} co={this.state.roomCO} /> :
+            this.state.roomType === 'music' ? <Music name={this.state.userName} room={this.state.userRoomName} co={this.state.roomCO} /> :
             this.state.roomType === 'chat' ? <Chat name={this.state.userName} room={this.state.userRoomName} co={this.state.roomCO} /> :
             <div>{this.state.roomCO}</div>
           }
