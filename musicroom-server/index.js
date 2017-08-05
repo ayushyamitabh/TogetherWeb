@@ -45,7 +45,18 @@ io.sockets.on('connection', function(socket){
       };
     }
   })
-
+  socket.on('leave',function(data) {
+    io.sockets.in(data.room).emit('userLeft', data);
+    var index = rooms[data.room]['users'].indexOf(data.name);
+    if (index > -1) {
+      rooms[data.room]['users'].splice(index, 1);
+    }
+    if (rooms[data.room]['users'].length === 0) {
+      console.log('Deleted room.');
+      delete rooms[data.key];
+    }
+  });
+  // CHAT
   socket.on('message', function(data){
     console.log(data.name,'says', data.msg);
     io.sockets.in(data.room).emit('updateChat', data);
