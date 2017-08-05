@@ -12,19 +12,52 @@ app.get('/', function(req, res){
 var play = false;
 var time = 0;
 
+var rooms = {
+  /*
+  roomName: {
+    users: [],
+    messages : [
+      {
+        msg: '',
+        from: ''
+      }
+    ]
+  }
+  */
+};
+
 io.sockets.on('connection', function(socket){
   console.log('User joined');
   socket.on('disconnect', function(){
     console.log('User left.')
   })
   socket.on('join', function(data){
-    console.log(data.name, ' joined ', data.room);
-    socket.username = data.name;
-    socket.room = data.room;
     socket.join(data.room);
+    if (rooms[data.room]) {
+      console.log(data.name,'joined room',data.room);
+      rooms[data.room]['users'].push(data.name);
+      io.sockets.in(data.room).emit('userJoined', data);
+    } else {
+      console.log(data.name,'created room',data.room);
+      rooms[data.room] = {
+        users: [data.name],
+        messages: []
+      };
+    }
   })
+  socket.on('leave',function(data) {
+    io.sockets.in(data.room).emit('userLeft', data);
+    var index = rooms[data.room]['users'].indexOf(data.name);
+    if (index > -1) {
+      rooms[data.room]['users'].splice(index, 1);
+    }
+    if (rooms[data.room]['users'].length === 0) {
+      console.log('Deleted room.');
+      delete rooms[data.key];
+    }
+  });
   socket.on('message', function(data){
-    console.log(socket.username, ' says ', data.msg);
+    console.log(data.name,'says', data.msg);
     io.sockets.in(data.room).emit('updateChat', data);
   })
 });

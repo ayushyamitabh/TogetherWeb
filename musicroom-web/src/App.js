@@ -108,7 +108,7 @@ class App extends Component {
           <AppBar>
             <Toolbar>
               <Typography type="title" className="room-title">
-                {this.state.roomType.toString().toUpperCase()}
+                {`${this.state.roomType.toString().toUpperCase()} [${this.state.userRoomName}]`}
               </Typography>
               <Button onClick={this.handleRequestClose} color="contrast">EXIT</Button>
             </Toolbar>
@@ -144,7 +144,7 @@ class App extends Component {
                 <Button 
                 className="joinBtn"
                 color="accent" 
-                onClick={()=>{this.getRoomName('chat','open')}}>
+                onClick={()=>{this.getRoomName('music','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
@@ -165,7 +165,7 @@ class App extends Component {
                 <Button 
                 className="joinBtn"
                 color="accent" 
-                onClick={()=>{this.getRoomName('chat','open')}}>
+                onClick={()=>{this.getRoomName('video','open')}}>
                   Join A Room
                 </Button>
               </CardActions>
