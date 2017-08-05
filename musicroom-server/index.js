@@ -12,22 +12,45 @@ app.get('/', function(req, res){
 var play = false;
 var time = 0;
 
+var rooms = {
+  /*
+  roomName: {
+    users: [],
+    messages : [
+      {
+        msg: '',
+        from: ''
+      }
+    ]
+  }
+  */
+};
+
 io.sockets.on('connection', function(socket){
   console.log('User joined');
   socket.on('disconnect', function(){
     console.log('User left.')
   })
   socket.on('join', function(data){
-    console.log(data.name, ' joined ', data.room);
-    socket.username = data.name;
-    socket.room = data.room;
     socket.join(data.room);
+    if (rooms[data.room]) {
+      console.log(data.name,'joined room',data.room);
+      rooms[data.room]['users'].push(data.name);
+      io.sockets.in(data.room).emit('userJoined', data);
+    } else {
+      console.log(data.name,'created room',data.room);
+      rooms[data.room] = {
+        users: [data.name],
+        messages: []
+      };
+    }
   })
-  // CHAT
+
   socket.on('message', function(data){
-    console.log(socket.username, ' says ', data.msg);
+    console.log(data.name,'says', data.msg);
     io.sockets.in(data.room).emit('updateChat', data);
   })
+  
   // VIDEO 
   socket.emit('play-pause-video', play);
   socket.emit('update-time', time);

@@ -108,7 +108,7 @@ class App extends Component {
           <AppBar>
             <Toolbar>
               <Typography type="title" className="room-title">
-                {this.state.roomType.toString().toUpperCase()}
+                {`${this.state.roomType.toString().toUpperCase()} [${this.state.userRoomName}]`}
               </Typography>
               <Button onClick={this.handleRequestClose} color="contrast">EXIT</Button>
             </Toolbar>
