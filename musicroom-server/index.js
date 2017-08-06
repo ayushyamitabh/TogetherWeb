@@ -32,6 +32,8 @@ io.sockets.on('connection', function(socket){
     console.log('User left.')
   })
   socket.on('join', function(data){
+    // socket.username = data.name;
+    // socket.room = data.room;
     socket.join(data.room);
     if (rooms[data.room]) {
       console.log(data.name,'joined room',data.room);
@@ -75,10 +77,14 @@ io.sockets.on('connection', function(socket){
     time = curTime;
     io.sockets.in(socket.room).emit('update-time', curTime);
   });
+  //to signal video change from the queue
+  socket.on('change-src', function() {
+    io.sockets.in(socket.room).emit('change-src', {});
+  });
   //to signal video add in the queue 
-  socket.on('add-video', function(data) {
-    io.sockets.in(socket.room).emit('add-video', data);
-  })
+  // socket.on('add-video', function(data) {
+  //   io.sockets.in(socket.room).emit('add-video', data);
+  // });
 });
 
 http.listen(8080, function(){
