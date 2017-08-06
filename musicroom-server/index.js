@@ -1,6 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var jsmediatags = require("jsmediatags");
 
 app.get('/', function(req, res){
   res.send('the response');
@@ -51,10 +52,21 @@ io.sockets.on('connection', function(socket){
     if (index > -1) {
       rooms[data.room]['users'].splice(index, 1);
     }
-    if (rooms[data.room]['users'].length === 0) {
+    if (rooms[data.room]['users'].length < 1) {
       console.log('Deleted room.');
       delete rooms[data.key];
     }
+  });
+  //MUSIC
+  socket.on('songAdded', function(data, room, result){
+    jsmediatags.read(data, {
+      onSuccess: function(tag) {
+        io.sockets.in(room).emit('addToQ', tag, result);
+      },
+      onError: function(error) {
+        console.log(':(', error.type, error.info);
+      }
+    });
   });
   // CHAT
   socket.on('message', function(data){

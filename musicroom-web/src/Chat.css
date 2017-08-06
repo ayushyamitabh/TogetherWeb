@@ -71,4 +71,17 @@
   color: white !important;
   margin-right: 4px !important;
   background-color: green !important;
+  max-width: 60% !important;
+}
+.user-chip span{
+  white-space: normal !important;
+  line-height: 20px !important;
+  margin-top: 7px !important;
+  margin-bottom: 7px !important;
+  padding: 0px 15px !important; 
+  user-select: text !important;
+}
+.user-chip {
+  height: auto !important;
+  user-select: text !important;
 }
