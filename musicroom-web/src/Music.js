@@ -19,9 +19,9 @@ import PauseIcon from 'material-ui-icons/Pause';
 import SkipNextIcon from 'material-ui-icons/SkipNext';
 import FileUploadIcon from 'material-ui-icons/FileUpload';
 import MediaElement from './MediaElement.js';
-import song from './res/song.mp3';
-import next from './res/song2.mp3';
 import $ from 'jquery';
+import fs from 'fs';
+import ss from 'socket.io-stream';
 
 class Music extends Component {
   constructor(props) {
@@ -62,41 +62,38 @@ class Music extends Component {
         notificationMessage:`${data.name} left.`
       })
     });
-    this.socket.on('addToQ', (meta, song)=>{
+    this.socket.on('addToQ', (meta, data)=>{
       var image = '';
       var base64String = '';
       var base64='';
-      if (song) {
-        if (meta.tags.picture) {
-          image = meta.tags.picture;
-          for (var i = 0; i < image.data.length; i++) {
-              base64String += String.fromCharCode(image.data[i]);
-          }
-          base64 = "data:" + image.format + ";base64," + window.btoa(base64String);
-          var curr = this.state.queue;
-          curr.push({
-            song: song,
-            title: meta.tags.title,
-            artist: meta.tags.artist,
-            cover: base64
-          });
-          this.setState({
-            queue: curr
-          })
-        } else {
-          var curr = this.state.queue;
-          curr.push({
-            song: song,
-            title: meta.tags.title,
-            artist: meta.tags.artist,
-            cover: base64
-          });
-          this.setState({
-            queue: curr
-          })
+      if (meta.tags.picture) {
+        image = meta.tags.picture;
+        for (var i = 0; i < image.data.length; i++) {
+            base64String += String.fromCharCode(image.data[i]);
         }
+        base64 = "data:" + image.format + ";base64," + window.btoa(base64String);
+        var curr = this.state.queue;
+        curr.push({
+          name: data,
+          title: meta.tags.title,
+          artist: meta.tags.artist,
+          cover: base64
+        });
+        this.setState({
+          queue: curr
+        })
       }
     });
+    ss(this.socket).on('startStream', (stream, data)=>{
+      var parts= [];
+      stream.on('data', (chunk)=>{
+        parts.push(chunk);
+      })
+      stream.on('end', ()=>{
+        document.getElementById('player').src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
+        document.getElementById('player').play();
+      })
+    })
   }
   componentWillUnmount() {
     this.socket.emit('leave', {name: this.props.name, room: this.props.room});
@@ -112,21 +109,13 @@ class Music extends Component {
   }
   addSong(e){
     var file = e.target.files[0];
-    this.socket.emit('songAdded', file, this.props.room);
-    var reader = new FileReader();
-    if (e.target.files && file) {
-      var reader = new FileReader();
-      reader.onload = (e)=>{
-        this.socket.emit('songAdded', file, this.props.room, e.target.result);
-      }
-      reader.readAsDataURL(file);
-    }
+    this.socket.emit('songAdded', file, {room:this.props.room,name:file.name});
   }
   // MUSIC PLAYER CONTROLS
   changeSong(index) {
     var player = document.getElementById('player');
     var song = this.state.queue[index];
-    player.src = song.song;
+    this.socket.emit('getStream',{name:song.name,room:this.props.room});
     player.currentTime = 0;
     document.getElementById('cover-art').src = song.cover;
     this.setState({
