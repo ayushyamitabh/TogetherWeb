@@ -19,7 +19,7 @@ class Chat extends Component {
     this.sendMessage = this.sendMessage.bind(this);
   }
   componentDidMount() {
-    this.socket.emit('join', {name: this.props.name, room: this.props.room});
+    this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'chat'});
     this.socket.on('updateChat', (data) => {
       var oldlist = this.state.messages;
       oldlist.push(data);

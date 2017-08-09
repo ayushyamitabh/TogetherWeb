@@ -45,12 +45,20 @@ io.sockets.on('connection', function(socket){
       console.log(data.name,'joined room',data.room);
       rooms[data.room]['users'].push(data.name);
       io.sockets.in(data.room).emit('userJoined', data);
+      if (data.type === 'music') {
+        console.log('Sending list of songs');
+        socket.emit('getSongQ',rooms[data.room]['songQ']);
+      }
     } else {
       console.log(data.name,'created room',data.room);
       rooms[data.room] = {
-        users: [data.name],
-        messages: []
+        users: [data.name]
       };
+      if (data.type === 'music') {
+        rooms[data.room]['songQ'] = [];
+      } else if (data.type === 'chat') {
+        rooms[data.room]['messages'] = [];
+      }
     }
   })
   socket.on('leave',function(data) {
@@ -61,10 +69,11 @@ io.sockets.on('connection', function(socket){
     }
     if (rooms[data.room]['users'].length < 1) {
       console.log('Deleted room.');
-      delete rooms[data.key];
+      delete rooms[data.room];
       rimraf(`${__dirname}/rooms/${data.room}`, function () { console.log('done'); });
     }
   });
+
   //MUSIC
   socket.on('songAdded', function(song, data){
     var location = `${__dirname}/rooms/${data.room}/music/`;
@@ -77,18 +86,38 @@ io.sockets.on('connection', function(socket){
     })
     jsmediatags.read(song, {
       onSuccess: function(tag) {
-        io.sockets.in(data.room).emit('addToQ', tag, data.name);
+        var meta = {
+          name: data.name, 
+          title: tag.tags.title,
+          artist: tag.tags.artist,
+          cover: tag.tags.picture
+        };
+        rooms[data.room]['songQ'].push(meta);
+        io.sockets.in(data.room).emit('addToQ', meta);
       },
       onError: function(error) {
         console.log(':(', error.type, error.info);
       }
     });
   });
+  socket.on('syncStream',function(data){
+    io.sockets.in(data.room).emit('friendStart', data.index);
+  });
+  socket.on('playPause', function(data){
+    io.sockets.in(data.room).emit('playControl',data.isPlaying);
+  });
   socket.on('getStream',function(data){
     var stream = ss.createStream();
-    ss(socket.in(data.room)).emit('startStream', stream);
     var filename =  `${__dirname}/rooms/${data.room}/music/${data.name}`;
+    socket.join(data.room);
+    ss(socket).emit('startStream', stream, {name: filename});
     fs.createReadStream(filename).pipe(stream);
+  })
+  socket.on('seeked', function(data){
+    io.sockets.in(data.room).emit('setTime',data.to);
+  })
+  socket.on('endQ',function(data){
+    io.sockets.in(data).emit('reachedEnd', true);
   })
   // CHAT
   socket.on('message', function(data){
