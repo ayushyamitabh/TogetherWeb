@@ -26,6 +26,13 @@ class Chat extends Component {
       this.setState({
         messages: oldlist
       })
+      var nestedChat = document.getElementById("nested-chat");
+      if (nestedChat) {
+        $('#nested-chat').animate({scrollTop: nestedChat.scrollHeight}, 400);
+      } else {
+        var msD = document.getElementById('message-display');
+        $('#message-display').animate({scrollTop: msD.scrollHeight}, 400);
+      }
     });
     this.socket.on('userJoined',(data)=>{
       if (data.name !== this.props.name) {
@@ -72,6 +79,7 @@ class Chat extends Component {
     return (
       <div className="chat-content">
         <Snackbar 
+          className="notification"
           anchorOrigin={{vertical:'bottom',horizontal:'left'}}
           open={this.state.notification}
           onRequestClose={()=>{this.setState({notification:false})}}
@@ -79,7 +87,7 @@ class Chat extends Component {
           autoHideDuration={900}
           message={<div>{this.state.notificationMessage}</div>}
         />
-        <div className="message-display">
+        <div id="message-display" className="message-display">
           {
             this.state.messages.map((data,key)=>{
               if (data.from === this.props.name) {

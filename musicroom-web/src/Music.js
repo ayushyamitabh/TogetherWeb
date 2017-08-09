@@ -8,6 +8,9 @@ import {Avatar,
         ListItem,
         ListItemText,
         Snackbar, 
+        Tabs,
+        Tab,
+        div,
         Typography} from 'material-ui';
 import Slide from 'material-ui/transitions/Slide';
 import './Music.css';
@@ -22,6 +25,7 @@ import MediaElement from './MediaElement.js';
 import $ from 'jquery';
 import fs from 'fs';
 import ss from 'socket.io-stream';
+import Chat from './Chat.js';
 
 class Music extends Component {
   constructor(props) {
@@ -36,7 +40,8 @@ class Music extends Component {
       duration: 1,
       playing: false,
       progress: 0,
-      queue:[]
+      queue:[],
+      index: 0
     }
     this.socket = io(`http://localhost:8080`);
     this.seek = this.seek.bind(this);
@@ -45,6 +50,7 @@ class Music extends Component {
     this.goBack = this.goBack.bind(this);
     this.addSong = this.addSong.bind(this);
     this.nextSong = this.nextSong.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
   componentDidMount() {
     this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'music'});
@@ -105,7 +111,6 @@ class Music extends Component {
       })
     });
     ss(this.socket).on('startStream', (stream, data)=>{
-      console.log('Starting stream.');
       var parts= [];
       stream.on('data', (chunk)=>{
         parts.push(chunk);
@@ -191,15 +196,26 @@ class Music extends Component {
   }
   goBack() {
     var player = document.getElementById('player');
-    player.currentTime = 0;
-    this.setState({
-      progress: player.currentTime
-    })
+    if (player.currentTime < 0.7) {
+      const prevIndex = this.state.currentIndex - 1;
+      if (prevIndex < 0) {
+        this.setState({
+          notification: true,
+          notificationMessage: 'Reached start of playist.'
+        })
+      } else {
+        this.sendSync(prevIndex);
+      }
+    } else {
+      this.socket.emit('seeked', {
+        to: 0,
+        room: this.props.room
+      })
+    }
   }
   seek () {
     var player = document.getElementById('player');
     if (this.state.seeking === false) {
-      console.log('Ignoring because volume is being changed');
     } else if (this.state.seeking === true) {
       this.socket.emit('seeked', {
         to: player.currentTime,
@@ -219,94 +235,98 @@ class Music extends Component {
       this.socket.emit('endQ',this.props.room);
     }
   }
+  handleChange (event, index) {
+    this.setState({ index });
+  };
   render () {
     return (
-      <div>
-      <div className="music-content">
-        <Snackbar 
-          anchorOrigin={{vertical:'bottom',horizontal:'left'}}
-          open={this.state.notification}
-          onRequestClose={()=>{this.setState({notification:false})}}
-          transition={<Slide direction='right' />}
-          autoHideDuration={4000}
-          message={<div>{this.state.notificationMessage}</div>}
+      <div className="music-page">
+        <div className="music-content">
+          <Snackbar 
+            anchorOrigin={{vertical:'bottom',horizontal:'left'}}
+            open={this.state.notification}
+            onRequestClose={()=>{this.setState({notification:false})}}
+            transition={<Slide direction='right' />}
+            autoHideDuration={4000}
+            message={<div>{this.state.notificationMessage}</div>}
+          />
+          <Card className="now-playing-card">
+            <div className="details">
+              <CardContent className="content">
+                <Typography type="headline">
+                  {this.state.title}
+                </Typography>
+                <Typography type="subheading" color="secondary">
+                  {this.state.artist}
+                </Typography>
+              </CardContent>
+              <div className="seek">
+                <audio 
+                  controls 
+                  id="player" 
+                  preload="none" 
+                  onTimeUpdate={this.timeupdate}
+                  onInput={this.seek}
+                  onVolumeChange={()=>{this.setState({seeking:false})}}
+                  onSeeking={()=>{this.setState({seeking:true})}}
+                  onEnded={this.nextSong}
+                >
+                  <source src={null} type="audio/mp3" />
+                </audio> 
+              </div>
+              <div className="controls">
+                <IconButton aria-label="Previous" onClick={this.goBack}>
+                  <SkipPreviousIcon />
+                </IconButton>
+                <IconButton aria-label="Play/pause" onClick={this.playPause}>
+                {
+                  this.state.playing === true ? 
+                  <PlayArrowIcon className="play-icon" /> :
+                  <PauseIcon className="play-icon" />
+                }
+                </IconButton>
+                <IconButton aria-label="Next" onClick={this.nextSong}>
+                  <SkipNextIcon />
+                </IconButton>
+              </div>
+            </div>
+            <div className="cover">
+              <img id="cover-art" src={this.state.cover} />
+            </div>
+          </Card>
+        </div>
+        <h4>HOLD AND DRAG TIME SLIDER TO SYNC WITH OTHERS</h4>
+        <List className="music-queue">
+          {
+            this.state.queue.map((data, index) => {
+              return (
+                <ListItem key={index} button onClick={()=>{this.sendSync(index)}}>
+                  <Avatar>
+                    <PlayArrowIcon />
+                  </Avatar>
+                  <ListItemText primary={data.title} secondary={data.artist}/>
+                </ListItem>
+              );
+            })
+          }
+          <ListItem button onClick={()=>{document.getElementById('file').click();}} >
+            <Avatar>
+              <FileUploadIcon />
+            </Avatar>
+            <ListItemText primary="Add A Song" secondary="Pick one from your collection" />
+          </ListItem>
+        </List>
+        <input 
+          multiple 
+          type="file" 
+          id="file" 
+          style={{display:'none'}} 
+          onChange={this.addSong}
+          accept="audio/mp3"
         />
-        <Card className="now-playing-card">
-          <div className="details">
-            <CardContent className="content">
-              <Typography type="headline">
-                {this.state.title}
-              </Typography>
-              <Typography type="subheading" color="secondary">
-                {this.state.artist}
-              </Typography>
-            </CardContent>
-            <div className="seek">
-              <audio 
-                controls 
-                id="player" 
-                preload="none" 
-                onTimeUpdate={this.timeupdate}
-                onInput={this.seek}
-                onVolumeChange={()=>{this.setState({seeking:false})}}
-                onSeeking={()=>{this.setState({seeking:true})}}
-                onEnded={this.nextSong}
-              >
-                <source src={null} type="audio/mp3" />
-              </audio> 
-            </div>
-            <div className="controls">
-              <IconButton aria-label="Previous" onClick={this.goBack}>
-                <SkipPreviousIcon />
-              </IconButton>
-              <IconButton aria-label="Play/pause" onClick={this.playPause}>
-              {
-                this.state.playing === true ? 
-                <PlayArrowIcon className="play-icon" /> :
-                <PauseIcon className="play-icon" />
-              }
-              </IconButton>
-              <IconButton aria-label="Next">
-                <SkipNextIcon />
-              </IconButton>
-            </div>
-          </div>
-          <div className="cover">
-            <img id="cover-art" src={this.state.cover} />
-          </div>
-        </Card>
-      </div>
-      <h4>HOLD AND DRAG TIME SLIDER TO SYNC WITH OTHERS</h4>
-      <List className="add-song">
-      <List className="music-queue">
-        {
-          this.state.queue.map((data, index) => {
-            return (
-              <ListItem key={index} button onClick={()=>{this.sendSync(index)}}>
-                <Avatar>
-                  <PlayArrowIcon />
-                </Avatar>
-                <ListItemText primary={data.title} secondary={data.artist}/>
-              </ListItem>
-            );
-          })
-        }
-      </List>
-        <ListItem button onClick={()=>{document.getElementById('file').click();}} >
-          <Avatar>
-            <FileUploadIcon />
-          </Avatar>
-          <ListItemText primary="Add A Song" secondary="Pick one from your collection" />
-        </ListItem>
-      </List>
-      <input 
-        multiple 
-        type="file" 
-        id="file" 
-        style={{display:'none'}} 
-        onChange={this.addSong}
-        accept="audio/mp3"
-      />
+        <div id="nested-chat" className="nested-chat">
+          <Chat room={this.props.room} name={this.props.name} />
+        </div>
       </div>
     );
   }

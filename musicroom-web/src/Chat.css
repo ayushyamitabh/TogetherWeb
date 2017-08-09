@@ -1,15 +1,15 @@
 .chat-content {
+  height: calc(100% - 75px) !important;
   padding-top: 70px;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end;
 }
 .chat-content .message-area {
   z-index: 2;
-  width: 95% !important;
-  padding-left: 2.5%;
-  padding-right: 2.5%;
-  height: 95px !important;
-  position: absolute;
-  bottom: 0;
+  padding: 0 25px;
   background-color: rgba(226,226,226,1);
+  flex: 1;
 }
 .chat-content .message-area .message {
   width: calc(100% - 60px) !important;
@@ -27,10 +27,10 @@
 }
 .chat-content .message-display {
   z-index: 1;
-  height: calc(100% - 144px) !important;
-  width: 100% !important;
-  position: absolute;
-  bottom: 10%;
+  /* position: absolute; */
+  /* bottom: 10%; */
+  flex: 6 !important;
+  overflow-y: scroll;
 }
 .chat-content .message-display .message-chip-left{
   float: left;
@@ -50,6 +50,7 @@
   color: white !important;
   margin-left: 4px !important;
   background-color: blue !important;
+  max-width: 60% !important;
 }
 
 .chat-content .message-display .message-chip-right{
@@ -84,4 +85,15 @@
 .user-chip {
   height: auto !important;
   user-select: text !important;
+}
+::-webkit-scrollbar-track {
+  background-color: rgba(0,0,0,0) !important;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(200,200,200,0.5) !important;
+  border-radius: 24px !important;
+  filter: drop-shadow(4px 2px rgba(100,100,100,0.8));
+}
+::-webkit-scrollbar {
+  width: 12px !important;
 }

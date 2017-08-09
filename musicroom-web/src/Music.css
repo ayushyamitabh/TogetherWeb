@@ -3,10 +3,13 @@
   padding-left: 25px;
   padding-right: 25px;
   display: flex;
+  justify-content: flex-start !important;
+  align-content: flex-start !important;
 }
 .music-content .now-playing-card {
   display: flex !important;
   width: 100% !important;
+  height: 151px;
 }
 .music-content .now-playing-card .details {
   flex: 1;
@@ -49,15 +52,12 @@
   z-index: 4 !important;
 }
 .music-queue {
-  max-height: 400px !important;
+  max-height: 40% !important; 
   background-color: rgba(190,190,250,0.3);
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-}
-.add-song {
-  width: calc(100% - 36px) !important;
-  margin-left: 18px !important;
-  padding-top: 0 !important;
+  width: 100% !important;
+  overflow-y: scroll !important;
 }
 
 audio::-webkit-media-controls-play-button {
@@ -77,4 +77,33 @@ h4 {
   margin: 6px 0;
   font-size: 10px;
   font-weight: 400;
+}
+.tabs {
+  margin-top: 60px;
+}
+.nested-chat {
+  position: absolute;
+  bottom: 0;
+  width: 100% !important;
+  max-height: 27.5% !important;
+  overflow-y: scroll;
+  flex: 1 !important;
+}
+.nested-chat .chat-content .message-display{
+  overflow-y: hidden !important;
+}
+.nested-chat .chat-content .message-area{
+  position: sticky;
+  bottom: 0;
+}
+.nested-chat .notification {
+  display: none;
+}
+.music-page {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+::-webkit-scrollbar {
+  display: none !important;
 }

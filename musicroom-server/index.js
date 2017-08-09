@@ -33,24 +33,22 @@ var rooms = {
 };
 
 io.sockets.on('connection', function(socket){
-  console.log('User joined');
+  
   socket.on('disconnect', function(){
-    console.log('User left.')
+
   })
+
   socket.on('join', function(data){
     // socket.username = data.name;
     // socket.room = data.room;
     socket.join(data.room);
     if (rooms[data.room]) {
-      console.log(data.name,'joined room',data.room);
       rooms[data.room]['users'].push(data.name);
       io.sockets.in(data.room).emit('userJoined', data);
       if (data.type === 'music') {
-        console.log('Sending list of songs');
         socket.emit('getSongQ',rooms[data.room]['songQ']);
       }
     } else {
-      console.log(data.name,'created room',data.room);
       rooms[data.room] = {
         users: [data.name]
       };
@@ -68,9 +66,8 @@ io.sockets.on('connection', function(socket){
       rooms[data.room]['users'].splice(index, 1);
     }
     if (rooms[data.room]['users'].length < 1) {
-      console.log('Deleted room.');
       delete rooms[data.room];
-      rimraf(`${__dirname}/rooms/${data.room}`, function () { console.log('done'); });
+      rimraf(`${__dirname}/rooms/${data.room}`, function () {  });
     }
   });
 
@@ -81,7 +78,6 @@ io.sockets.on('connection', function(socket){
       if (err) console.log(err);
       fs.writeFile(location + `${data.name}`, song, (err)=>{
         if (err) console.log(err);
-        console.log('File Saved.');
       })
     })
     jsmediatags.read(song, {
@@ -119,9 +115,9 @@ io.sockets.on('connection', function(socket){
   socket.on('endQ',function(data){
     io.sockets.in(data).emit('reachedEnd', true);
   })
+
   // CHAT
   socket.on('message', function(data){
-    console.log(data.name,'says', data.msg);
     io.sockets.in(data.room).emit('updateChat', data);
   })
   
