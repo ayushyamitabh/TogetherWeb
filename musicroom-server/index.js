@@ -7,6 +7,8 @@ var fs = require('fs');
 var jsmediatags = require("jsmediatags");
 var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
+var ytdl = require('ytdl-core');
+var ffmpeg = require('fluent-ffmpeg');
 
 app.get('/', function(req, res){
   res.send('the response');
@@ -114,6 +116,32 @@ io.sockets.on('connection', function(socket){
   })
   socket.on('endQ',function(data){
     io.sockets.in(data).emit('reachedEnd', true);
+  })
+  socket.on('ytAdded', function(data){
+    var filename = `${__dirname}/tempFiles/${data.title}.mp4`;
+    var location = `${__dirname}/rooms/${data.room}/music/`;
+    var song = `${__dirname}/rooms/${data.room}/music/${data.title}.mp3`;
+    ytdl(data.url).pipe(fs.createWriteStream(filename)).on('finish',function(){
+      mkdirp(location, function(err){
+        if (err) console.log(err);
+        var process = new ffmpeg({source:filename});
+        process.setFfmpegPath(`${__dirname}/Applications/ffmpeg.exe`);
+        process.saveToFile(song, function(out, err){
+          if (err) console.log(err);
+        });
+        process.on('end', function(){
+          fs.unlink(filename);
+          var meta = {
+            name: `${data.title}.mp3`, 
+            title: data.title,
+            artist: data.channel,
+            cover: ''
+          };
+          rooms[data.room]['songQ'].push(meta);
+          io.sockets.in(data.room).emit('addToQ', meta);
+        });
+      })
+    });
   })
 
   // CHAT

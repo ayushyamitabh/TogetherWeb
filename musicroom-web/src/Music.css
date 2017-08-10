@@ -107,3 +107,14 @@ h4 {
 ::-webkit-scrollbar {
   display: none !important;
 }
+.search-dialog-content{
+  width: 80% !important;
+  margin: 0 auto;
+  padding-top: 16px !important;
+}
+.ytsearch {
+  position: sticky !important;
+  top: 0;
+  background-color: white !important;
+  z-index: 3;
+}

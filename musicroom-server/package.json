@@ -4,10 +4,12 @@
   "description": "Musicroom Chat Room",
   "dependencies": {
     "express": "^4.15.2",
+    "fluent-ffmpeg": "^2.1.2",
     "jsmediatags": "^3.6.2",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
     "socket.io": "^2.0.3",
-    "socket.io-stream": "^0.9.1"
+    "socket.io-stream": "^0.9.1",
+    "ytdl-core": "^0.15.1"
   }
 }

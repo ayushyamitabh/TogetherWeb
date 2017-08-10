@@ -1,31 +1,27 @@
 import React, {Component} from 'react';
 import {Avatar,
         Card, 
-        CardContent, 
+        CardContent,
+        Drawer, 
         IconButton, 
-        LinearProgress,
         List,
         ListItem,
         ListItemText,
         Snackbar, 
-        Tabs,
-        Tab,
-        div,
+        TextField,
         Typography} from 'material-ui';
 import Slide from 'material-ui/transitions/Slide';
 import './Music.css';
-import logo from './logo.svg';
 import io from 'socket.io-client';
 import SkipPreviousIcon from 'material-ui-icons/SkipPrevious';
 import PlayArrowIcon from 'material-ui-icons/PlayArrow';
 import PauseIcon from 'material-ui-icons/Pause';
 import SkipNextIcon from 'material-ui-icons/SkipNext';
 import FileUploadIcon from 'material-ui-icons/FileUpload';
-import MediaElement from './MediaElement.js';
-import $ from 'jquery';
-import fs from 'fs';
+import SearchIcon from 'material-ui-icons/Search';
 import ss from 'socket.io-stream';
 import Chat from './Chat.js';
+import * as youtubeSearch from 'youtube-search';
 
 class Music extends Component {
   constructor(props) {
@@ -41,8 +37,10 @@ class Music extends Component {
       playing: false,
       progress: 0,
       queue:[],
-      index: 0
-    }
+      index: 0,
+      searchDialog: false,
+      results: []
+    };
     this.socket = io(`http://localhost:8080`);
     this.seek = this.seek.bind(this);
     this.changeSong = this.changeSong.bind(this);
@@ -51,6 +49,7 @@ class Music extends Component {
     this.addSong = this.addSong.bind(this);
     this.nextSong = this.nextSong.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.search = this.search.bind(this);
   }
   componentDidMount() {
     this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'music'});
@@ -237,10 +236,74 @@ class Music extends Component {
   }
   handleChange (event, index) {
     this.setState({ index });
-  };
+  }
+  search (e) {
+    if (e.target.value !== '') {
+      youtubeSearch(e.target.value, 
+      youtubeSearch.YouTubeSearchOptions = {
+        maxResults: 15,
+        key: 'AIzaSyADFAaSJJm7h2kIj0SPzPH8TLNmfndPx04'
+      }, 
+      (err, results) => {
+        if(err) return console.log(err);
+        this.setState({
+          results: results
+        })
+      });
+    } else {
+      this.setState({
+        results:[]
+      })
+    }
+  }
+  addYT(data) {
+    this.socket.emit('ytAdded',{
+      room: this.props.room,
+      url: data.link,
+      title: data.title,
+      channel: data.channelTitle
+    });
+    this.setState({
+      searchDialog: false,
+      results: [],
+      notification: true,
+      notificationMessage: 'Adding YouTube sources may take a while...'
+    });
+  }
   render () {
     return (
       <div className="music-page">
+        <Drawer
+          className="search-dialog"
+          anchor="bottom"
+          open={this.state.searchDialog}
+          onRequestClose={()=>{this.setState({searchDialog:false,results:[]})}}
+        >
+          <div className="search-dialog-content">
+            <TextField
+              className="ytsearch"
+              label="Search"
+              fullWidth
+              margin="normal"
+              onChange={this.search}
+            />
+            <h4>Results</h4>
+            <List>
+              {
+                this.state.results.map((data, index)=>{
+                  if (data.kind === "youtube#video") {
+                    return (
+                      <ListItem key={index} button onClick={()=>{this.addYT(data)}}>
+                        <img alt={data.title} src={data.thumbnails.default.url} />
+                        <ListItemText primary={data.title} secondary={data.channelTitle} />
+                      </ListItem>
+                    );
+                  }
+                })
+              }
+            </List>
+          </div>
+        </Drawer>
         <div className="music-content">
           <Snackbar 
             anchorOrigin={{vertical:'bottom',horizontal:'left'}}
@@ -291,7 +354,7 @@ class Music extends Component {
               </div>
             </div>
             <div className="cover">
-              <img id="cover-art" src={this.state.cover} />
+              <img alt='' id="cover-art" src={this.state.cover} />
             </div>
           </Card>
         </div>
@@ -314,6 +377,12 @@ class Music extends Component {
               <FileUploadIcon />
             </Avatar>
             <ListItemText primary="Add A Song" secondary="Pick one from your collection" />
+          </ListItem>
+          <ListItem button onClick={()=>{this.setState({searchDialog:true})}} >
+            <Avatar>
+              <SearchIcon />
+            </Avatar>
+            <ListItemText primary="Add A Song" secondary="Search YouTube For A Song" />
           </ListItem>
         </List>
         <input 
