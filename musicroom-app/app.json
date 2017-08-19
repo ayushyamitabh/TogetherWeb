@@ -1,5 +1,15 @@
-{
-  "expo": {
-    "sdkVersion": "17.0.0"
-  }
-}
+ {
+   "expo": {
+    "name": "MusicRoom",
+    "icon": "./icon.png",
+    "version": "1.0.0",
+    "slug": "your-app-slug",
+    "sdkVersion": "17.0.0",
+    "ios": {
+      "bundleIdentifier": "com.musicroom.app"
+    },
+    "android": {
+      "package": "com.musicroom.app"
+    }
+   }
+ }
