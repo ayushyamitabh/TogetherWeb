@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import MediaElement from './MediaElement.js';
-//import {List} from 'material-ui';
+import '../node_modules/video-react/dist/video-react.css';
 import './Video.css';
+import { Player } from 'video-react';
 
 let tempQueue = [
   'https://www.youtube.com/watch?v=PWsXQKv6UiA',
@@ -10,63 +10,78 @@ let tempQueue = [
   'https://www.youtube.com/watch?v=Ra8San4epfY',
 ];
 
+let bigPlayButton;
+let smallPlayButton;
 let timeBar;
-let playerInstance;
-let playerElement;
 
-//make the src change in mediaelement instead
+const sources = {
+  sintelTrailer: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+  bunnyTrailer: 'http://media.w3.org/2010/05/bunny/trailer.mp4',
+  bunnyMovie: 'http://media.w3.org/2010/05/bunny/movie.mp4',
+  test: 'http://media.w3.org/2010/05/video/movie_300.webm',
+};
 
 class Video extends Component {
   constructor(props) {
     super(props);
-    // this.timeBar;
-    // this.playerInstance;
-    // this.playerElement;
+
+    this.state = {
+      source: sources['bunnyMovie'],
+    };
+
     this.socket = io(`http://localhost:8080`);
   }
   componentDidMount() {
-    const { MediaElementPlayer } = global;
-    playerInstance = new MediaElementPlayer('player_html5');
-    playerElement = document.getElementById('player');
-    timeBar = document.getElementsByClassName('mejs__time-slider')[0];
-    playerInstance.play();
+    this.refs.player.subscribeToStateChange(this.handleStateChange.bind(this));
+    let player = this.refs.player;
+
+    bigPlayButton = document.getElementsByClassName('video-react-big-play-button')[0];
+    smallPlayButton = document.getElementsByClassName('video-react-play-control')[0];
+    timeBar = document.getElementsByClassName('video-react-progress-holder')[0];
 
     this.socket.emit('join', {name: this.props.name, room: this.props.room});
 
     //sends signal to pause video
-    playerElement.addEventListener('pause', ()=> {
-      this.socket.emit('play-pause-video', false);
+    bigPlayButton.addEventListener('click', ()=> {
+      this.socket.emit('play-pause-video', this.state.player.paused);
     });
-    //sends signal to play video
-    playerElement.addEventListener('playing', ()=> {
-      this.socket.emit('play-pause-video', true);
+    smallPlayButton.addEventListener('click', ()=> {
+      console.log(this.state.player.paused);
+      this.socket.emit('play-pause-video', this.state.player.paused);
     });
     //sends signal that media has ended and source should be changed
-    playerElement.addEventListener('ended', ()=> {
-      console.log('a');
-      this.socket.emit('change-src', {});
-    })
+    
+
     //sends signal if video time is changed
     timeBar.addEventListener('click', ()=> {
-      this.socket.emit('update-time', playerInstance.getCurrentTime());
+      console.log(this.state.player.currentTime);
+      this.socket.emit('update-time', this.state.player.currentTime);
     });
 
     //receives signal to handle play/pause
     this.socket.on('play-pause-video', (curPlay)=> {
-      if (curPlay) playerInstance.play();
-      else playerInstance.pause();
+      if (!curPlay) player.play();
+      else player.pause();
     });
     //receives signal to handle video time update
     this.socket.on('update-time', (curTime)=> {
-      playerInstance.setCurrentTime(curTime);
+      player.seek(curTime);
     });
     //receives signal to load new video from queue
-    this.socket.on('change-src', ()=> {
-      tempQueue.shift();
-      playerInstance.setSrc(tempQueue[0]);
-      playerInstance.load();
-      playerInstance.play();
+    // this.socket.on('change-src', ()=> {
+    //   tempQueue.shift();
+    //   player.setSrc(tempQueue[0]);
+    //   player.load();
+    //   player.play();
+    // });
+  }
+
+  handleStateChange(state, prevState) {
+    // copy player state to this component's state
+    this.setState({
+      player: state
     });
+    //console.log(state);
   }
 
   componentWillUnmount() {
@@ -74,32 +89,11 @@ class Video extends Component {
   }
 
   render() {
-    const
-      sources = [
-        // { src: 'http://www.streambox.fr/playlists/test_001/stream.m3u8', type: 'application/x-mpegURL' },
-         { src: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4', type: 'video/mp4' },
-        // { src: 'rtmp://firehose.cul.columbia.edu:1935/vod/mp4:sample.mp4', type: 'video/rtmp' }
-        // { src: 'https://www.youtube.com/watch?v=i-GWFGwbEPg', type: 'video/youtube' }
-      ],
-      config = {},
-      tracks = {}
-      ;
-
     return (
       <div className="video-content">
-        <MediaElement
-          id="player"
-          ref={elem => this.mediaelement = elem}
-          mediaType="video"
-          preload="none"
-          controls
-          width="640"
-          height="360"
-          poster=""
-          sources={JSON.stringify(sources)}
-          options={JSON.stringify(config)}
-          tracks={JSON.stringify(tracks)}
-        />
+        <Player ref="player">
+          <source src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" />
+        </Player>
       </div>
     );
   }
