@@ -29,34 +29,34 @@ class Video extends Component {
       source: sources['bunnyMovie'],
     };
 
-    this.socket = io(`http://localhost:8080`);
+    this.socket = this.props.socket;
+    console.log(this.socket);
   }
   componentDidMount() {
-    this.refs.player.subscribeToStateChange(this.handleStateChange.bind(this));
     let player = this.refs.player;
-
+  
     bigPlayButton = document.getElementsByClassName('video-react-big-play-button')[0];
     smallPlayButton = document.getElementsByClassName('video-react-play-control')[0];
     timeBar = document.getElementsByClassName('video-react-progress-holder')[0];
 
-    this.socket.emit('join', {name: this.props.name, room: this.props.room});
+    //this.socket.emit('join', {name: this.props.name, room: this.props.room});
 
     //sends signal to pause video
-    bigPlayButton.addEventListener('click', ()=> {
-      this.socket.emit('play-pause-video', this.state.player.paused);
-    });
-    smallPlayButton.addEventListener('click', ()=> {
-      console.log(this.state.player.paused);
-      this.socket.emit('play-pause-video', this.state.player.paused);
-    });
+    // bigPlayButton.addEventListener('click', ()=> {
+    //   this.socket.emit('play-pause-video', this.state.player.paused);
+    // });
+    // smallPlayButton.addEventListener('click', ()=> {
+    //   this.socket.emit('play-pause-video', player.paused);
+    // });
     //sends signal that media has ended and source should be changed
     
 
     //sends signal if video time is changed
-    timeBar.addEventListener('click', ()=> {
-      console.log(this.state.player.currentTime);
-      this.socket.emit('update-time', this.state.player.currentTime);
-    });
+    // timeBar.addEventListener('click', ()=> {
+    //   this.socket.emit('update-time', player.currentTime);
+    // });
+
+    this.socket.emit('play-pause-video', false);
 
     //receives signal to handle play/pause
     this.socket.on('play-pause-video', (curPlay)=> {
@@ -76,14 +76,6 @@ class Video extends Component {
     // });
   }
 
-  handleStateChange(state, prevState) {
-    // copy player state to this component's state
-    this.setState({
-      player: state
-    });
-    //console.log(state);
-  }
-
   componentWillUnmount() {
     this.socket.disconnect();
   }
@@ -92,7 +84,7 @@ class Video extends Component {
     return (
       <div className="video-content">
         <Player ref="player">
-          <source src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" />
+          <source src= {this.state.source} />
         </Player>
       </div>
     );

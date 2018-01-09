@@ -10,67 +10,57 @@ var rimraf = require('rimraf');
 var ytdl = require('ytdl-core');
 var ffmpeg = require('fluent-ffmpeg');
 
-app.get('/', function(req, res){
-  res.send('the response');
-  if (req) {
-    res.send(req.toString());
-  }
-});
-
 var play = false;
 var time = 0;
 
-var rooms = {
-  /*
-  roomName: {
-    users: [],
-    messages : [
-      {
-        msg: '',
-        from: ''
-      }
-    ]
-  }
-  */
-};
+var rooms = {};
 
 io.sockets.on('connection', function(socket){
+
+  socket.on('join_link', function(data) {
+    rooms['420'] = 'video';
+    socket.join(data.room);
+    console.log('Joined room: ', rooms[data.room]);
+    socket.emit('user_joined', rooms[data.room]);
+  });
+
+  socket.emit('play-pause-video', false);
   
   socket.on('disconnect', function(){
 
-  })
+  });
 
   socket.on('join', function(data){
-    // socket.username = data.name;
-    // socket.room = data.room;
-    socket.join(data.room);
-    if (rooms[data.room]) {
-      rooms[data.room]['users'].push(data.name);
-      io.sockets.in(data.room).emit('userJoined', data);
-      if (data.type === 'music') {
-        socket.emit('getSongQ',rooms[data.room]['songQ']);
-      }
-    } else {
-      rooms[data.room] = {
-        users: [data.name]
-      };
-      if (data.type === 'music') {
-        rooms[data.room]['songQ'] = [];
-      } else if (data.type === 'chat') {
-        rooms[data.room]['messages'] = [];
-      }
-    }
-  })
-  socket.on('leave',function(data) {
-    io.sockets.in(data.room).emit('userLeft', data);
-    var index = rooms[data.room]['users'].indexOf(data.name);
-    if (index > -1) {
-      rooms[data.room]['users'].splice(index, 1);
-    }
-    if (rooms[data.room]['users'].length < 1) {
-      delete rooms[data.room];
-      rimraf(`${__dirname}/rooms/${data.room}`, function () {  });
-    }
+     socket.username = data.name;
+     socket.room = data.room;
+     socket.join(data.room);
+  //   if (rooms[data.room]) {
+  //     rooms[data.room]['users'].push(data.name);
+  //     io.sockets.in(data.room).emit('userJoined', data);
+  //     if (data.type === 'music') {
+  //       socket.emit('getSongQ',rooms[data.room]['songQ']);
+  //     }
+  //   } else {
+  //     rooms[data.room] = {
+  //       users: [data.name]
+  //     };
+  //     if (data.type === 'music') {
+  //       rooms[data.room]['songQ'] = [];
+  //     } else if (data.type === 'chat') {
+  //       rooms[data.room]['messages'] = [];
+  //     }
+  //   }
+  // })
+  // socket.on('leave',function(data) {
+  //   io.sockets.in(data.room).emit('userLeft', data);
+  //   var index = rooms[data.room]['users'].indexOf(data.name);
+  //   if (index > -1) {
+  //     rooms[data.room]['users'].splice(index, 1);
+  //   }
+  //   if (rooms[data.room]['users'].length < 1) {
+  //     delete rooms[data.room];
+  //     rimraf(`${__dirname}/rooms/${data.room}`, function () {  });
+  //   }
   });
 
   //MUSIC
@@ -150,12 +140,12 @@ io.sockets.on('connection', function(socket){
   })
   
   // VIDEO 
-  socket.emit('play-pause-video', play);
+  socket.emit('play-pause-video', false);
   socket.emit('update-time', time);
   //to signal play/pause
   socket.on('play-pause-video', function(curPlay) {
     play = curPlay;
-    io.sockets.in(socket.room).emit('play-pause-video', curPlay);
+    io.emit('play-pause-video', curPlay);
   });
   //to signal video time update
   socket.on('update-time', function(curTime) {
@@ -170,6 +160,9 @@ io.sockets.on('connection', function(socket){
   // socket.on('add-video', function(data) {
   //   io.sockets.in(socket.room).emit('add-video', data);
   // });
+  socket.on('video-state', function(state) {
+    io.sockets.in(socket.room).emit('video-state', state);
+  });
 });
 
 http.listen(8080, function(){
