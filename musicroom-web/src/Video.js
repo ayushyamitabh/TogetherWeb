@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import './Video.css';
+import Player from 'react-player';
 
 const sources = {
   sintelTrailer: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
@@ -27,10 +28,8 @@ class Video extends Component {
   
   }
 
-  render() {
-    return (
-      <div></div>
-    );
+  render () {
+    return <Player url='https://www.youtube.com/watch?v=YWZWsEM6jug' playing />
   }
 }
 
