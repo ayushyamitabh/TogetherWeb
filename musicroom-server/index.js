@@ -18,13 +18,26 @@ var rooms = {};
 io.sockets.on('connection', function(socket){
 
   socket.on('join_link', function(data) {
-    rooms['420'] = 'video';
-    socket.join(data.room);
-    console.log('Joined room: ', rooms[data.room]);
-    socket.emit('user_joined', rooms[data.room]);
-  });
+    var type = data.type;
 
-  socket.emit('play-pause-video', false);
+    //create new room
+    if(data.room === 'new') {
+      var room = randomName();
+      rooms[room] = type;
+      socket.emit('redirect', room)
+      return;
+    } 
+
+    //otherwise join  (if room not created -> error)
+    var room = data.room;
+    if(!rooms.hasOwnProperty(room)) {
+      socket.emit('redirect', 'not_found')
+      return;
+    }
+
+    socket.join(room);
+    socket.emit('user_joined', type);
+  });
   
   socket.on('disconnect', function(){
 
@@ -164,6 +177,18 @@ io.sockets.on('connection', function(socket){
     io.sockets.in(socket.room).emit('video-state', state);
   });
 });
+
+function randomName() {
+  var random = 'new';
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  while(rooms.hasOwnProperty(random) || random === 'new' || random === 'error') {
+    random = "";
+    for (var i = 0; i < 6; i++) {
+      random += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+  }
+  return random;
+}
 
 http.listen(8080, function(){
   console.log('listening on *:8080');
