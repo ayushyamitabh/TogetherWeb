@@ -15,11 +15,11 @@ class Chat extends Component {
       messages: [],
       notification:false
     }
-    this.socket = io(`http://localhost:8080`);
+    this.socket = this.props.socket;
     this.sendMessage = this.sendMessage.bind(this);
   }
   componentDidMount() {
-    this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'chat'});
+    // this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'chat'});
     this.socket.on('updateChat', (data) => {
       var oldlist = this.state.messages;
       oldlist.push(data);
@@ -34,20 +34,20 @@ class Chat extends Component {
         $('#message-display').animate({scrollTop: msD.scrollHeight}, 400);
       }
     });
-    this.socket.on('userJoined',(data)=>{
-      if (data.name !== this.props.name) {
-        this.setState({
-          notification:true,
-          notificationMessage:`${data.name} joined.`
-        })
-      }
-    });
-    this.socket.on('userLeft',(data)=>{
-      this.setState({
-        notification:true,
-        notificationMessage:`${data.name} left.`
-      })
-    });
+    // this.socket.on('userJoined',(data)=>{
+    //   if (data.name !== this.props.name) {
+    //     this.setState({
+    //       notification:true,
+    //       notificationMessage:`${data.name} joined.`
+    //     })
+    //   }
+    // });
+    // this.socket.on('userLeft',(data)=>{
+    //   this.setState({
+    //     notification:true,
+    //     notificationMessage:`${data.name} left.`
+    //   })
+    // });
     $('.message input').focusin(()=>{
       $('.send-btn').css('transform','rotate(-90deg)');
     });
@@ -56,8 +56,8 @@ class Chat extends Component {
     });
   }
   componentWillUnmount() {
-    this.socket.emit('leave', {name: this.props.name, room: this.props.room});
-    this.socket.disconnect();
+    // this.socket.emit('leave', {name: this.props.name, room: this.props.room});
+    // this.socket.disconnect();
   }
   sendMessage(e) {
     e.preventDefault();
