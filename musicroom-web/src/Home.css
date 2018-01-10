@@ -1,0 +1,55 @@
+body {
+  background: url('./res/background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top;
+}
+.navigation {
+  user-select: none !important;
+  background-color: rgba(100,100,200,0) !important;
+  box-shadow: none !important;
+}
+.navigation h2 {
+  position: relative !important;
+  width: 100% !important;
+  font-size: 55px !important;
+  margin-top: 35px !important;
+}
+.navigation h2:hover {
+  cursor: default;
+}
+.tiles-container {
+  width: 73% !important;
+  margin: 0 auto !important;
+  margin-top: 10% !important;
+}
+.tiles-container .tile {
+  margin-top: 20px !important;
+  transition: all ease-out 0.3s;
+}
+.tiles-container .tile:hover {
+  margin-top: 0 !important;
+}
+.about {
+  width: 72.5% !important;
+  margin: 0 auto !important;
+}
+.res-links {
+  width: 73% !important;
+  margin: 0 auto !important;
+}
+.res-links .res a{
+  background-color: #3C8271 !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+.room-title {
+  color: white !important;
+  flex: 1 !important;
+}
+.joinBtn {
+  width: 100% !important;
+}
+.roomNameInput {
+  margin-bottom: 20px !important;
+}
