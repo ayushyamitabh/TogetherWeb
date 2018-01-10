@@ -41,7 +41,7 @@ class Music extends Component {
       searchDialog: false,
       results: []
     };
-    this.socket = io(`http://localhost:8080`);
+    this.socket = this.props.socket;
     this.seek = this.seek.bind(this);
     this.changeSong = this.changeSong.bind(this);
     this.playPause = this.playPause.bind(this);
@@ -52,21 +52,21 @@ class Music extends Component {
     this.search = this.search.bind(this);
   }
   componentDidMount() {
-    this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'music'});
-    this.socket.on('userJoined',(data)=>{
-      if (data.name !== this.props.name) {
-        this.setState({
-          notification:true,
-          notificationMessage:`${data.name} joined.`
-        })
-      }
-    });
-    this.socket.on('userLeft',(data)=>{
-      this.setState({
-        notification:true,
-        notificationMessage:`${data.name} left.`
-      })
-    });
+    // this.socket.emit('join', {name: this.props.name, room: this.props.room, type: 'music'});
+    // this.socket.on('userJoined',(data)=>{
+    //   if (data.name !== this.props.name) {
+    //     this.setState({
+    //       notification:true,
+    //       notificationMessage:`${data.name} joined.`
+    //     })
+    //   }
+    // });
+    // this.socket.on('userLeft',(data)=>{
+    //   this.setState({
+    //     notification:true,
+    //     notificationMessage:`${data.name} left.`
+    //   })
+    // });
     this.socket.on('getSongQ', (data)=>{
       var songQ = [];
       data.map((song, index)=>{
@@ -156,8 +156,8 @@ class Music extends Component {
     })
   }
   componentWillUnmount() {
-    this.socket.emit('leave', {name: this.props.name, room: this.props.room});
-    this.socket.disconnect();
+    // this.socket.emit('leave', {name: this.props.name, room: this.props.room});
+    // this.socket.disconnect();
   }
   addSong(e){
     var file = e.target.files[0];
@@ -393,9 +393,9 @@ class Music extends Component {
           onChange={this.addSong}
           accept="audio/mp3"
         />
-        <div id="nested-chat" className="nested-chat">
+        {/* <div id="nested-chat" className="nested-chat">
           <Chat room={this.props.room} name={this.props.name} />
-        </div>
+        </div> */}
       </div>
     );
   }

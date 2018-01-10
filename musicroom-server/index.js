@@ -10,9 +10,6 @@ var rimraf = require('rimraf');
 var ytdl = require('ytdl-core');
 var ffmpeg = require('fluent-ffmpeg');
 
-var play = false;
-var time = 0;
-
 var rooms = {};
 
 io.sockets.on('connection', function(socket){
@@ -36,44 +33,11 @@ io.sockets.on('connection', function(socket){
     }
 
     socket.join(room);
-    socket.emit('user_joined', type);
+    socket.emit('user_joined', rooms[room]);
   });
   
   socket.on('disconnect', function(){
 
-  });
-
-  socket.on('join', function(data){
-     socket.username = data.name;
-     socket.room = data.room;
-     socket.join(data.room);
-  //   if (rooms[data.room]) {
-  //     rooms[data.room]['users'].push(data.name);
-  //     io.sockets.in(data.room).emit('userJoined', data);
-  //     if (data.type === 'music') {
-  //       socket.emit('getSongQ',rooms[data.room]['songQ']);
-  //     }
-  //   } else {
-  //     rooms[data.room] = {
-  //       users: [data.name]
-  //     };
-  //     if (data.type === 'music') {
-  //       rooms[data.room]['songQ'] = [];
-  //     } else if (data.type === 'chat') {
-  //       rooms[data.room]['messages'] = [];
-  //     }
-  //   }
-  // })
-  // socket.on('leave',function(data) {
-  //   io.sockets.in(data.room).emit('userLeft', data);
-  //   var index = rooms[data.room]['users'].indexOf(data.name);
-  //   if (index > -1) {
-  //     rooms[data.room]['users'].splice(index, 1);
-  //   }
-  //   if (rooms[data.room]['users'].length < 1) {
-  //     delete rooms[data.room];
-  //     rimraf(`${__dirname}/rooms/${data.room}`, function () {  });
-  //   }
   });
 
   //MUSIC
@@ -152,36 +116,13 @@ io.sockets.on('connection', function(socket){
     io.sockets.in(data.room).emit('updateChat', data);
   })
   
-  // VIDEO 
-  socket.emit('play-pause-video', false);
-  socket.emit('update-time', time);
-  //to signal play/pause
-  socket.on('play-pause-video', function(curPlay) {
-    play = curPlay;
-    io.emit('play-pause-video', curPlay);
-  });
-  //to signal video time update
-  socket.on('update-time', function(curTime) {
-    time = curTime;
-    io.sockets.in(socket.room).emit('update-time', curTime);
-  });
-  //to signal video change from the queue
-  socket.on('change-src', function() {
-    io.sockets.in(socket.room).emit('change-src', {});
-  });
-  //to signal video add in the queue 
-  // socket.on('add-video', function(data) {
-  //   io.sockets.in(socket.room).emit('add-video', data);
-  // });
-  socket.on('video-state', function(state) {
-    io.sockets.in(socket.room).emit('video-state', state);
-  });
+
 });
 
 function randomName() {
   var random = 'new';
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  while(rooms.hasOwnProperty(random) || random === 'new' || random === 'error') {
+  while(rooms.hasOwnProperty(random) || random === 'new' || random === 'not_found') {
     random = "";
     for (var i = 0; i < 6; i++) {
       random += possible.charAt(Math.floor(Math.random() * possible.length));
