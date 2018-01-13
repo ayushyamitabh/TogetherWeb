@@ -40,6 +40,14 @@ io.sockets.on('connection', function(socket){
 
   });
 
+  //VIDEO
+  socket.on('play-pause-video-s', function(data) {
+    var name = data.name;
+    var room = data.room;
+    var playing = data.playing;
+    socket.to(room).emit('play-pause-video-c', playing);
+  });
+
   //MUSIC
   socket.on('songAdded', function(song, data){
     var location = `${__dirname}/rooms/${data.room}/music/`;
@@ -122,12 +130,14 @@ io.sockets.on('connection', function(socket){
 function randomName() {
   var random = 'new';
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
   while(rooms.hasOwnProperty(random) || random === 'new' || random === 'not_found') {
     random = "";
     for (var i = 0; i < 6; i++) {
       random += possible.charAt(Math.floor(Math.random() * possible.length));
     }
   }
+
   return random;
 }
 
