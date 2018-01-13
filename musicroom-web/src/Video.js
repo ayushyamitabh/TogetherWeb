@@ -12,10 +12,42 @@ import './video_res/Range.scss'
 
 import Duration from './video_res/Duration'
 
+import {GridList, GridListTile} from 'material-ui/GridList';
+
 const MULTIPLE_SOURCES = [
   { src: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4', type: 'video/mp4' },
   { src: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.ogv', type: 'video/ogv' },
   { src: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.webm', type: 'video/webm' }
+]
+
+const styles = theme => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+    backgroundColor: theme.palette.background.paper,
+  },
+  gridList: {
+    width: 500,
+    height: 450,
+  },
+  icon: {
+    color: 'rgba(255, 255, 255, 0.54)',
+  },
+});
+
+const queue = [
+  {
+    img: 'https://www.w3schools.com/howto/img_fjords.jpg',
+    title: 'Breakfast',
+    author: 'jill111',
+  },
+  {
+    img: 'https://www.w3schools.com/howto/img_fjords.jpg',
+    title: 'Tasty burger',
+    author: 'pashminu',
+  }
 ]
 
 export default class Video extends Component {
@@ -135,14 +167,6 @@ export default class Video extends Component {
   onClickFullscreen = () => {
     screenfull.request(findDOMNode(this.player))
   }
-  renderLoadButton = (url, label) => {
-    return (
-      <button onClick={() => this.load(url)}>
-        {label}
-      </button>
-    )
-  }
-
 
   ref = player => {
     this.player = player
@@ -150,7 +174,6 @@ export default class Video extends Component {
 
   render () {
     const { url, playing, volume, muted, loop, played, loaded, duration, playbackRate } = this.state
-    const SEPARATOR = ' · '
 
     return (
       <div className='app'>
@@ -236,6 +259,20 @@ export default class Video extends Component {
             </tr> */}
           </tbody></table>
         </section>
+        <div className={styles.root}>
+          <GridList cellHeight={180} style={{ width: 500, height: 450, overflowY: 'auto' }}>
+          {queue.map((tile) => (
+             <GridListTile
+              key={tile.img}
+              title={tile.title}
+              subtitle={<span>by <b>{tile.author}</b></span>}
+              // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
+            >
+              <img src={tile.img} />
+            </GridListTile>
+          ))}
+          </GridList>
+        </div>
       </div>
     )
   }
