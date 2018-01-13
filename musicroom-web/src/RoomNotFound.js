@@ -51,7 +51,7 @@ class RoomNotFound extends Component {
             </AppBar>
     
             <Grid className="tiles-container" justify="center" container gutter={8}>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <Card className="tile">
                   <CardContent>
                     <Typography type="headline" component="h2">
@@ -72,7 +72,7 @@ class RoomNotFound extends Component {
                 </Card>
               </Grid>
     
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <Card className="tile">
                   <CardContent>
                     <Typography type="headline" component="h2">
@@ -92,8 +92,29 @@ class RoomNotFound extends Component {
                   </CardActions>
                 </Card>
               </Grid>
+
+              <Grid item xs={3}>
+                <Card className="tile">
+                  <CardContent>
+                    <Typography type="headline" component="h2">
+                      READ
+                    </Typography>
+                    <Typography component="p">
+                    Blalalblbalbalblalb - balblalbalballba
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button 
+                    className="joinBtn"
+                    color="accent" 
+                    onClick={()=>{this.createRoom('read')}}>
+                      Create A Room
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
     
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <Card className="tile">
                   <CardContent>
                     <Typography type="headline" component="h2">

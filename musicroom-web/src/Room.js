@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import io from 'socket.io-client';
-import Video from './Video.js';
-import Music from './Music.js';
-import Chat from './Chat.js';
-import RoomNotFound from './RoomNotFound.js';
-import {Redirect} from 'react-router-dom';
+import React, { Component } from 'react'
+import io from 'socket.io-client'
+import Video from './Video.js'
+import Music from './Music.js'
+import Chat from './Chat.js'
+import Read from './Read.js'
+import RoomNotFound from './RoomNotFound.js'
+import {Redirect} from 'react-router-dom'
 
 class Room extends Component {
     constructor(props) {
@@ -50,11 +51,13 @@ class Room extends Component {
     }
 
     render() {
+        const type = this.state.type
         return(
             <div>
-               {this.state.type === 'video' ? <Video socket={this.socket} room={this.room} name={this.name}/> : 
-                this.state.type === 'music' ? <Music socket={this.socket} room={this.room} name={this.name}/> :
-                this.state.type === 'chat' ? <Chat socket={this.socket} room={this.room} name={this.name}/> :
+               {type === 'video' ? <Video socket={this.socket} room={this.room} name={this.name}/> : 
+                type === 'music' ? <Music socket={this.socket} room={this.room} name={this.name}/> :
+                type === 'chat' ? <Chat socket={this.socket} room={this.room} name={this.name}/> :
+                type === 'read' ? <Read socket={this.socket} room={this.room} name={this.name}/> :
                 <h1></h1>}
             </div>
         )
