@@ -13,6 +13,7 @@
     "react-konva": "^1.1.4",
     "react-player": "^0.25.3",
     "react-router-dom": "^4.2.2",
+    "screenfull": "^3.3.2",
     "socket-io-server": "^1.0.5",
     "socket.io-client": "^2.0.3",
     "socket.io-stream": "^0.9.1",

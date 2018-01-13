@@ -45,8 +45,15 @@ io.sockets.on('connection', function(socket){
     var name = data.name;
     var room = data.room;
     var playing = data.playing;
-    socket.to(room).emit('play-pause-video-c', playing);
+    io.in(room).emit('play-pause-video-c', playing);
   });
+
+  socket.on('seek-s', function(data) {
+    var name = data.name;
+    var room = data.room;
+    var time = data.time;
+    io.in(room).emit('seek-c', time);
+  })
 
   //MUSIC
   socket.on('songAdded', function(song, data){
