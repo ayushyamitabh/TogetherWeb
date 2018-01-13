@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import io from 'socket.io-client';
-import './Video.css';
-import Player from 'react-player';
+import React, { Component } from 'react'
+import io from 'socket.io-client'
+import './Video.css'
+import Player from 'react-player'
 
 const sources = {
   sintelTrailer: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
@@ -10,27 +10,53 @@ const sources = {
   test: 'http://media.w3.org/2010/05/video/movie_300.webm',
 };
 
-class Video extends Component {
-  constructor(props) {
-    super(props);
+export default class Video extends Component {
+  state = {
+    playing: false,
+    source: 'https://www.youtube.com/watch?v=YWZWsEM6jug'
+  };
 
-    this.state = {
-      source: sources['bunnyMovie'],
-    };
+  socket = this.props.socket;
 
-    this.socket = this.props.socket;
+  componentWillMount() {
+    this.socket.on('play-pause-video-c', (playing) => {
+      this.playPause(playing);
+    })
   }
-  componentDidMount() {
-    
+
+  playPause = (play) => {
+    this.setState({ playing: play })
+  }                               
+
+  onPlay = () => {
+    const data = { 
+      name: this.props.name,
+      room: this.props.room, 
+      playing: true,
+    }
+    this.socket.emit('play-pause-video-s', data);
   }
 
-  componentWillUnmount() {
-  
+  onPause = () => {
+    const data = { 
+      name: this.props.name,
+      room: this.props.room, 
+      playing: false,
+    }
+    this.socket.emit('play-pause-video-s', data);
+  }
+
+  ref = (player) => {
+    this.player = player
   }
 
   render () {
-    return <Player url='https://www.youtube.com/watch?v=YWZWsEM6jug' playing />
+    return <Player 
+      ref={this.ref}
+      playing={this.state.playing} 
+      url={this.state.source} 
+      onPlay={this.onPlay}
+      onPause={this.onPause}
+    />
   }
 }
-
-export default Video;
